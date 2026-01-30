@@ -1,0 +1,414 @@
+/* 品牌定位分析表单样式 - 现代化深蓝色主题设计 */
+
+/* CSS变量定义 - 深蓝色主题 */
+:root {
+    --form-primary: #1E3A8A;
+    --form-secondary: #3B82F6;
+    --form-accent: #60A5FA;
+    --form-light: #EFF6FF;
+    --form-border: #DBEAFE;
+    --form-text: #1E3A8A;
+    --form-text-light: #6B7280;
+    --form-bg: #FFFFFF;
+    --form-bg-light: #F8FAFC;
+    --form-error: #EF4444;
+    --form-success: #10B981;
+    --form-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+}
+
+/* 表单容器 */
+.store-form {
+    max-width: 100%;
+    background: var(--form-bg);
+    border-radius: 16px;
+    box-shadow: var(--form-shadow);
+    overflow: hidden;
+}
+
+/* 表单区块 - 超紧凑设计 */
+.form-section {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background: var(--form-light);
+    border-radius: 10px;
+    border: 2px solid var(--form-border);
+    border-left: 4px solid var(--form-primary);
+}
+
+.form-section-title {
+    color: var(--form-secondary);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid var(--form-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* 移除emoji图标，只保留FontAwesome图标 */
+
+/* 表单行 - 超紧凑设计 */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 表单组 - 超紧凑设计 */
+.form-group {
+    margin-bottom: 0.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--form-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.required {
+    color: var(--form-error);
+    font-weight: bold;
+}
+
+/* 输入框样式 - 超紧凑设计 */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--form-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--form-bg);
+    color: var(--form-text);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--form-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+    background: var(--form-bg);
+}
+
+input[type="text"]:invalid,
+input[type="email"]:invalid,
+input[type="tel"]:invalid,
+select:invalid {
+    border-color: var(--form-error);
+}
+
+/* 下拉选择框 */
+select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234CAF50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    padding-right: 3rem;
+    appearance: none;
+}
+
+/* 文本域 */
+textarea {
+    resize: vertical;
+    min-height: 5rem;
+    line-height: 1.5;
+}
+
+/* 复选框组 - 超紧凑设计 */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    background: var(--form-bg);
+    border-radius: 8px;
+    border: 1px solid var(--form-border);
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: normal !important;
+    margin-bottom: 0 !important;
+    padding: 0.3rem;
+    border-radius: 5px;
+    background: var(--form-bg-light);
+    border: 1px solid transparent;
+}
+
+.checkbox-item:hover {
+    background: var(--form-light);
+    border-color: var(--form-accent);
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.4rem;
+    transform: scale(1.1);
+    accent-color: var(--form-primary);
+}
+
+.checkbox-item span {
+    font-size: 0.85rem;
+    color: var(--form-text);
+    font-weight: 500;
+}
+
+/* 价格滑块 - 超紧凑设计 */
+.price-range {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: var(--form-bg);
+    border-radius: 12px;
+    border: 1px solid var(--form-border);
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--form-border);
+    outline: none;
+    appearance: none;
+    margin-bottom: 0.75rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--form-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    border: 3px solid var(--form-bg);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--form-primary);
+    cursor: pointer;
+    border: 3px solid var(--form-bg);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.price-display {
+    text-align: center;
+    font-weight: 600;
+    color: var(--form-primary);
+    font-size: 1.1rem;
+    background: var(--form-light);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--form-border);
+}
+
+/* 错误消息 */
+.error-message {
+    color: var(--form-error);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none;
+    padding: 0.5rem;
+    background: #FFEBEE;
+    border-radius: 6px;
+    border-left: 4px solid var(--form-error);
+}
+
+.error-message.show {
+    display: block;
+}
+
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: var(--form-error);
+    background-color: #FFEBEE;
+}
+
+/* 表单操作按钮 - 超紧凑设计 */
+.form-actions {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding: 1.5rem 1rem;
+    background: var(--form-light);
+    border-radius: 0 0 16px 16px;
+    border-top: 3px solid var(--form-primary);
+}
+
+.form-actions .btn {
+    min-width: 250px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    background: var(--form-primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-actions .btn:hover {
+    background: var(--form-secondary);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+/* 按钮加载状态 */
+.btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.loading-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .form-section {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .checkbox-group {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+
+    .form-actions {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .form-actions .btn {
+        min-width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-section-title {
+        font-size: 1.2rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+        padding: 0.75rem;
+        font-size: 1rem; /* 防止iOS缩放 */
+    }
+
+    .checkbox-group {
+        padding: 0.5rem;
+    }
+
+    .price-range {
+        padding: 0.5rem;
+    }
+}
+
+/* 成功状态 */
+.form-group.success input,
+.form-group.success select,
+.form-group.success textarea {
+    border-color: var(--form-success);
+    background-color: #F1F8E9;
+}
+
+/* 占位符样式 - 优化设计，移除斜体，使用柔和颜色 */
+::placeholder {
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
+}
+
+::-webkit-input-placeholder {
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
+}
+
+::-moz-placeholder {
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
+}
+
+:-ms-input-placeholder {
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
+}
+
+/* 自定义品类输入框 */
+#customCategory {
+    margin-top: 0.75rem;
+    border-color: var(--form-primary);
+}
+
+/* 表单提示信息 */
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--form-text-light);
+    margin-top: 0.25rem;
+    font-style: italic;
+    padding: 0.5rem;
+    background: var(--form-bg-light);
+    border-radius: 6px;
+    border-left: 3px solid var(--form-accent);
+}
+
+/* 必填字段标识 */
+.form-group.required label::after {
+    content: " *";
+    color: var(--form-error);
+    font-weight: bold;
+}
+
+/* 移除所有emoji图标，只保留FontAwesome图标 */

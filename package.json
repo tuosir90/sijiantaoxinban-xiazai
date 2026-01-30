@@ -1,0 +1,7 @@
+{
+  "name": "sijiantaoxinban-xiazai",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/node/*.test.js"
+  }
+}

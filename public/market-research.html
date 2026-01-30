@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商圈调研分析平台</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- 统一主题配置 -->
+    <link rel="stylesheet" href="css/theme.css?v=20250709-01">
+    <!-- 原有样式文件 -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/report.css">
+    <!-- PDF导出专用样式 -->
+    <link rel="stylesheet" href="css/pdf-styles.css?v=20250114-01">
+    <link rel="stylesheet" href="css/report-template.css">
+
+    <link rel="stylesheet" href="css/market-analysis.css?v=20250713-15">
+
+    <style>
+        /* 主题色彩已移至 theme.css 统一管理 */
+
+        /* 导航栏样式 */
+        .page-navigation {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .nav-brand:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* 全局样式已移至 theme.css 统一管理 */
+
+        /* 主容器样式 */
+        .main-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 2rem auto;
+            max-width: 1400px;
+        }
+
+        /* 模块头部美化 */
+        .module-header {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 页脚样式统一 */
+        .app-footer {
+            background: #1E3A8A !important;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        /* API选择器样式 */
+        .api-selector-container {
+            margin-top: 0.5rem;
+        }
+
+        .api-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            height: 100%;
+        }
+
+        .api-option:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .api-option.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .api-option-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .api-info {
+            flex: 1;
+        }
+
+        .api-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .api-provider {
+            font-size: 0.8rem;
+        }
+
+        .api-status {
+            margin-left: auto;
+        }
+
+        .api-description {
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .api-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .feature-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .api-option.selected .feature-tag {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .feature-tag.feature-supported {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .feature-tag.feature-limited {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .api-option.selected .feature-tag.feature-supported {
+            background: #a7f3d0;
+            color: #064e3b;
+        }
+
+        .api-option.selected .feature-tag.feature-limited {
+            background: #fde68a;
+            color: #78350f;
+        }
+
+        .api-current-selection {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .api-option {
+                margin-bottom: 0.75rem;
+            }
+
+            .api-features {
+                margin-top: 0.5rem;
+            }
+
+            .feature-tag {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.4rem;
+            }
+        }
+
+        .app-footer p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        /* 统一表单样式 */
+        .form-control, .form-select {
+            border: 2px solid #E5E7EB !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+            background: white !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1E3A8A !important;
+            box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25) !important;
+            outline: none !important;
+        }
+
+        .form-label {
+            font-weight: 600 !important;
+            color: #1E3A8A !important;
+            margin-bottom: 0.5rem !important;
+            font-size: 1rem !important;
+        }
+
+        /* 统一按钮样式 */
+        .btn-primary, button[type="submit"], .generate-btn, .btn-success {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;
+            border: none !important;
+            color: white !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.15) !important;
+        }
+
+        .btn-primary:hover, button[type="submit"]:hover, .generate-btn:hover, .btn-success:hover {
+            background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            color: white !important;
+        }
+
+        /* 统一卡片样式 */
+        .card {
+            background: white !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            border: 1px solid #E5E7EB !important;
+            overflow: hidden !important;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
+            border-bottom: 2px solid #1E3A8A !important;
+            padding: 1.5rem !important;
+            font-weight: 600 !important;
+            color: #1E3A8A !important;
+        }
+
+        /* 统一标题样式 */
+        h1, h2, h3, h4, h5, h6 {
+            color: #1E3A8A !important;
+        }
+
+        /* 统一容器样式 */
+        .main-container {
+            background: white !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+            overflow: hidden !important;
+            margin: 2rem auto !important;
+            max-width: 1400px !important;
+        }
+
+        /* 文件上传区域样式 */
+        .upload-area {
+            border: 2px dashed #1E3A8A !important;
+            border-radius: 12px !important;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
+            padding: 2rem !important;
+            text-align: center !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .upload-area:hover {
+            border-color: #3B82F6 !important;
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%) !important;
+        }
+
+        .upload-area i {
+            color: #1E3A8A !important;
+            font-size: 3rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .upload-area p {
+            color: #1E3A8A !important;
+            font-weight: 600 !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* 加载状态样式 */
+        .loading-spinner {
+            width: 3rem !important;
+            height: 3rem !important;
+            border: 4px solid #EFF6FF !important;
+            border-top: 4px solid #1E3A8A !important;
+            border-radius: 50% !important;
+            animation: spin 1s linear infinite !important;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 表格样式优化 */
+        .table {
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 600 !important;
+            padding: 1rem !important;
+        }
+
+        .table tbody td {
+            padding: 1rem !important;
+            border-color: #E5E7EB !important;
+        }
+
+        .table tbody tr:hover {
+            background: #EFF6FF !important;
+        }
+
+        /* 主题系统 - CSS变量定义 */
+        :root {
+            /* 默认深蓝色主题 */
+            --theme-primary: #1E3A8A;
+            --theme-secondary: #3B82F6;
+            --theme-accent: #60A5FA;
+            --theme-light: #EFF6FF;
+            --theme-dark: #1E40AF;
+            --theme-text: #1E3A8A;
+            --theme-bg: #F8FAFC;
+        }
+
+        /* 深蓝色主题 */
+        .theme-blue {
+            --theme-primary: #1E3A8A;
+            --theme-secondary: #3B82F6;
+            --theme-accent: #60A5FA;
+            --theme-light: #EFF6FF;
+            --theme-dark: #1E40AF;
+            --theme-text: #1E3A8A;
+            --theme-bg: #F8FAFC;
+        }
+
+        /* 绿色主题 */
+        .theme-green {
+            --theme-primary: #059669;
+            --theme-secondary: #10B981;
+            --theme-accent: #34D399;
+            --theme-light: #ECFDF5;
+            --theme-dark: #047857;
+            --theme-text: #059669;
+            --theme-bg: #F0FDF4;
+        }
+
+        /* 紫色主题 */
+        .theme-purple {
+            --theme-primary: #7C3AED;
+            --theme-secondary: #8B5CF6;
+            --theme-accent: #A78BFA;
+            --theme-light: #F3F4F6;
+            --theme-dark: #6D28D9;
+            --theme-text: #7C3AED;
+            --theme-bg: #FAF5FF;
+        }
+
+        /* 橙色主题 */
+        .theme-orange {
+            --theme-primary: #EA580C;
+            --theme-secondary: #F97316;
+            --theme-accent: #FB923C;
+            --theme-light: #FFF7ED;
+            --theme-dark: #C2410C;
+            --theme-text: #EA580C;
+            --theme-bg: #FFFBEB;
+        }
+
+        /* 红色主题 */
+        .theme-red {
+            --theme-primary: #DC2626;
+            --theme-secondary: #EF4444;
+            --theme-accent: #F87171;
+            --theme-light: #FEF2F2;
+            --theme-dark: #B91C1C;
+            --theme-text: #DC2626;
+            --theme-bg: #FFFBFB;
+        }
+
+        /* 主题选择器样式 */
+        .theme-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .theme-selector-label {
+            font-size: 0.9rem;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .theme-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.1);
+            border-color: #9CA3AF;
+        }
+
+        .theme-option.active {
+            border-color: #374151;
+            box-shadow: 0 0 0 2px rgba(55, 65, 81, 0.2);
+        }
+
+        .theme-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .theme-blue-option { background: linear-gradient(135deg, #1E3A8A, #3B82F6); }
+        .theme-green-option { background: linear-gradient(135deg, #059669, #10B981); }
+        .theme-purple-option { background: linear-gradient(135deg, #7C3AED, #8B5CF6); }
+        .theme-orange-option { background: linear-gradient(135deg, #EA580C, #F97316); }
+        .theme-red-option { background: linear-gradient(135deg, #DC2626, #EF4444); }
+
+        /* 报告主题样式应用 */
+        #market-report-section h1,
+        #market-report-section h2,
+        #market-report-section h3,
+        #market-report-section h4,
+        #market-report-section h5,
+        #market-report-section h6 {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .section-title {
+            color: var(--theme-primary) !important;
+            border-bottom-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section strong,
+        #market-report-section .highlight {
+            color: var(--theme-secondary) !important;
+        }
+
+        #market-report-section .table th {
+            background-color: var(--theme-light) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .table td {
+            border-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .table tbody tr:hover {
+            background-color: var(--theme-light) !important;
+        }
+
+        #market-report-section .btn-primary {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            border-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .btn-primary:hover {
+            background: linear-gradient(135deg, var(--theme-dark), var(--theme-primary)) !important;
+            border-color: var(--theme-dark) !important;
+        }
+
+        #market-report-section .alert-info {
+            background-color: var(--theme-light) !important;
+            border-color: var(--theme-accent) !important;
+            color: var(--theme-text) !important;
+        }
+
+        #market-report-section .badge {
+            background-color: var(--theme-secondary) !important;
+        }
+
+        #market-report-section .border-primary {
+            border-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .text-primary {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .bg-primary {
+            background-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .bg-light {
+            background-color: var(--theme-light) !important;
+        }
+
+        /* 图表主题颜色 */
+        #market-report-section .chart-container {
+            border-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .chart-title {
+            color: var(--theme-primary) !important;
+        }
+
+        /* 商圈调研报告背景区域主题应用 */
+        #market-report-section .market-report-header-section {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+        }
+
+        #market-report-section .market-report-title {
+            color: white !important;
+        }
+
+        /* 商圈调研报告标题响应式样式 */
+        @media (max-width: 768px) {
+            #market-report-section .market-report-title {
+                font-size: 2rem !important;
+            }
+
+            #market-report-section .market-report-subtitle {
+                font-size: 1rem !important;
+            }
+
+            #market-report-section .market-report-header-section {
+                padding: 2rem 1rem !important;
+                margin-bottom: 2rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #market-report-section .market-report-title {
+                font-size: 1.8rem !important;
+            }
+
+            #market-report-section .market-report-subtitle {
+                font-size: 0.9rem !important;
+            }
+
+            #market-report-section .market-report-header-section {
+                padding: 1.5rem 0.5rem !important;
+                border-radius: 12px !important;
+            }
+        }
+
+        #market-report-section .market-meta-item {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        #market-report-section .market-meta-label {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 数据指标卡片背景 */
+        #market-report-section .data-overview-section {
+            background: var(--theme-light) !important;
+        }
+
+        #market-report-section .data-card {
+            background: linear-gradient(135deg, var(--theme-light), var(--theme-bg)) !important;
+            border-color: var(--theme-accent) !important;
+        }
+
+        /* 数据指标卡片主题化 */
+        #market-report-section .data-indicator-card {
+            background: linear-gradient(135deg, var(--theme-light), var(--theme-bg)) !important;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--theme-accent) !important;
+        }
+
+        #market-report-section .data-indicator-card:hover {
+            transform: translateY(-3px);
+        }
+
+        #market-report-section .data-indicator-card h3 {
+            color: var(--theme-primary) !important;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        #market-report-section .data-indicator-card .indicator-value {
+            font-size: 2em;
+            color: var(--theme-primary) !important;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #market-report-section .data-indicator-card p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        /* 竞争对手总结区域主题化 - 现代化设计 */
+        #market-report-section .competitor-summary-section {
+            background: linear-gradient(135deg, var(--theme-light, #EFF6FF), var(--theme-bg, #F8FAFC)) !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            margin-top: 25px !important;
+            border-left: 4px solid var(--theme-primary, #1E3A8A) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid var(--theme-accent, #60A5FA) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        #market-report-section .competitor-summary-section::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 3px !important;
+            background: linear-gradient(90deg, var(--theme-primary, #1E3A8A), var(--theme-secondary, #3B82F6)) !important;
+        }
+
+        #market-report-section .competitor-summary-section h4 {
+            color: var(--theme-primary, #1E3A8A) !important;
+            margin: 0 0 15px 0 !important;
+            font-size: 1.2em !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+
+        #market-report-section .competitor-summary-section h4::before {
+            content: '📊' !important;
+            font-size: 1.1em !important;
+        }
+
+        #market-report-section .competitor-summary-item {
+            margin: 0 0 12px 0 !important;
+            color: #333 !important;
+            background: white !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+            border: 1px solid var(--theme-accent, #60A5FA) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #market-report-section .competitor-summary-item:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+        }
+
+        #market-report-section .competitor-summary-item:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        #market-report-section .competitor-summary-item strong {
+            color: var(--theme-secondary, #3B82F6) !important;
+            font-weight: 600 !important;
+        }
+
+        /* 表格标题行主题化 */
+        #market-report-section .table-header-row {
+            background: var(--theme-primary) !important;
+            color: white !important;
+        }
+
+        #market-report-section .table-header-row th {
+            color: white !important;
+        }
+
+        /* 数据可视化分析区域主题化 */
+        #market-report-section .data-visualization-section h2 {
+            color: var(--theme-primary) !important;
+            border-bottom: 2px solid var(--theme-accent) !important;
+        }
+
+        #market-report-section .chart-container {
+            border: 1px solid var(--theme-accent) !important;
+        }
+
+        #market-report-section .chart-container h3 {
+            color: var(--theme-primary) !important;
+        }
+
+        /* 分析区域标题主题化 */
+        #market-report-section .analysis-section-title {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-subsection-title {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-border-bottom {
+            border-bottom: 2px solid var(--theme-accent) !important;
+        }
+
+        /* 综合建议区域主题化 */
+        #market-report-section .comprehensive-advice-section {
+            background: var(--theme-light) !important;
+            border-left: 4px solid var(--theme-primary) !important;
+        }
+
+        /* 数据指标区域主题化 */
+        #market-report-section .data-indicators-section {
+            background: white !important;
+            border: 1px solid var(--theme-accent) !important;
+        }
+
+        #market-report-section .data-indicators-section h2 {
+            color: var(--theme-primary) !important;
+            border-bottom: 2px solid var(--theme-accent) !important;
+        }
+
+        /* 商圈概况区域主题化 */
+        #market-report-section .market-overview-section {
+            background: white !important;
+            border: 1px solid var(--theme-accent) !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin: 20px 0 !important;
+        }
+
+        #market-report-section .market-section-title {
+            color: var(--theme-primary) !important;
+            border-bottom: 2px solid var(--theme-accent) !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 20px !important;
+        }
+
+        #market-report-section .market-overview-cards {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 20px !important;
+            margin-top: 20px !important;
+        }
+
+        #market-report-section .market-overview-card {
+            background: var(--theme-light) !important;
+            border: 1px solid var(--theme-accent) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            text-align: center !important;
+        }
+
+        #market-report-section .market-overview-card h3 {
+            color: var(--theme-text) !important;
+            margin-bottom: 10px !important;
+            font-size: 14px !important;
+        }
+
+        #market-report-section .market-score {
+            color: var(--theme-primary) !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            margin: 10px 0 !important;
+        }
+
+        #market-report-section .market-overview-card p {
+            color: var(--theme-text) !important;
+            font-size: 12px !important;
+            line-height: 1.4 !important;
+            margin: 0 !important;
+        }
+
+        /* 响应式设计 - 商圈概况卡片 */
+        @media (max-width: 1200px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 16px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            #market-report-section .market-overview-card {
+                padding: 12px !important;
+            }
+
+            #market-report-section .market-score {
+                font-size: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            #market-report-section .market-overview-card h3 {
+                font-size: 12px !important;
+            }
+
+            #market-report-section .market-score {
+                font-size: 18px !important;
+            }
+
+            #market-report-section .market-overview-card p {
+                font-size: 11px !important;
+            }
+        }
+
+        #market-report-section .data-card .card-title {
+            color: var(--theme-text) !important;
+        }
+
+        #market-report-section .data-card .card-value {
+            color: var(--theme-primary) !important;
+        }
+
+        /* 表格和卡片背景 */
+        #market-report-section .info-card {
+            background: white !important;
+            border-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .info-card .card-header {
+            background: var(--theme-light) !important;
+            color: var(--theme-text) !important;
+            border-bottom-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .table thead th {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+        }
+
+        /* 分析卡片左侧边框 */
+        #market-report-section .analysis-card {
+            border-left-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-card .card-header {
+            background: var(--theme-light) !important;
+            color: var(--theme-text) !important;
+        }
+
+        /* 固定商圈报告标题文字为白色 - 增强优先级 */
+        #market-report-section .market-report-header-section,
+        #market-report-section .market-report-header-section * {
+            color: white !important;
+        }
+
+        #market-report-section .market-report-title,
+        #market-report-section h1.market-report-title {
+            color: white !important;
+        }
+
+        #market-report-section .market-meta-label {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        #market-report-section .market-meta-item {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+
+        #market-report-section .market-meta-item * {
+            color: white !important;
+        }
+
+        /* 商圈分析区域主题化 */
+        #market-report-section .analysis-section {
+            background: var(--theme-light) !important;
+            border-color: var(--theme-accent) !important;
+            border-left-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-section h2 {
+            color: var(--theme-primary) !important;
+            border-bottom-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-section h3 {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-point {
+            background: var(--theme-light) !important;
+            border-left-color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .analysis-point strong {
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .highlight {
+            background: var(--theme-light) !important;
+            color: var(--theme-primary) !important;
+        }
+
+        #market-report-section .emphasis {
+            color: var(--theme-primary) !important;
+        }
+
+        /* 竞争对手表格主题化 */
+        #market-report-section .competitor-table {
+            border-color: var(--theme-accent) !important;
+        }
+
+        #market-report-section .competitor-table th {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+        }
+
+        #market-report-section .competitor-table td {
+            border-color: var(--theme-accent) !important;
+        }
+
+        /* 竞争对手概览表格头部主题化 */
+        #market-report-section .competitor-table-header {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+        }
+
+        #market-report-section .competitor-table-header th {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        #market-report-section .table-header-row {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+        }
+
+        #market-report-section .table-header-row th {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* 覆盖market-analysis.css中的硬编码绿色样式 */
+        #market-report-section .competitor-overview-section table thead tr {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+        }
+
+        #market-report-section .competitor-overview-section table thead th {
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* 数据可视化区域主题化 */
+        #market-report-section .visualization-section {
+            background: var(--theme-light) !important;
+            border-color: var(--theme-accent) !important;
+            border-left-color: var(--theme-primary) !important;
+        }
+
+        /* 强制设置删除按钮叉号大小 - 最高优先级 */
+        .market-file-remove i,
+        button.market-file-remove i,
+        .market-file-remove > i,
+        #market-file-preview .market-file-remove i {
+            font-size: 10px !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        #market-report-section .visualization-section h2 {
+            color: var(--theme-primary) !important;
+        }
+
+        /* 表单按钮区域样式 */
+        .form-actions {
+            text-align: center !important;
+            padding: 2rem 0 1rem 0 !important;
+            border-top: 1px solid #E5E7EB !important;
+            margin-top: 2rem !important;
+        }
+
+        .form-actions button {
+            min-width: 200px !important;
+            font-size: 1.1rem !important;
+            padding: 0.75rem 2rem !important;
+        }
+
+        .module-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .module-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #FFF8DC !important; /* 亮米色，在蓝色背景上更突出 */
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,248,220,0.3) !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .module-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 紧凑现代化卡片布局 */
+        .form-section {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 1.25rem !important;
+            margin-bottom: 1.25rem !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            position: relative !important;
+        }
+
+        .form-section::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 3px !important;
+            background: linear-gradient(90deg, #1E3A8A, #3B82F6) !important;
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .section-title {
+            color: #1e293b !important;
+            font-size: 1.1rem !important;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: #1E3A8A !important;
+        }
+
+        /* 现代化信息卡片 */
+        .info-card {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            margin-bottom: 1rem !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            overflow: hidden !important;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding: 1rem 1.25rem !important;
+        }
+
+        .card-header-custom h4 {
+            color: #1e293b !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+        }
+
+        /* 紧凑输入框设计 */
+        .form-control, .form-select {
+            border: 1px solid #d1d5db !important;
+            border-radius: 8px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.95rem !important;
+            transition: all 0.2s ease !important;
+            background: white !important;
+            color: #374151 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1E3A8A !important;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1) !important;
+            outline: none !important;
+            background: #ffffff !important;
+        }
+
+        .form-label {
+            font-weight: 600 !important;
+            color: #374151 !important;
+            margin-bottom: 0.5rem !important;
+            font-size: 0.9rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+
+        /* 输入组样式优化 */
+        .input-group-text {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb) !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 8px 0 0 8px !important;
+            padding: 0.75rem !important;
+        }
+
+        .input-group .form-control {
+            border-left: none !important;
+            border-radius: 0 8px 8px 0 !important;
+        }
+
+        .input-group-text i {
+            color: #1E3A8A !important;
+            font-size: 0.9rem !important;
+        }
+
+        /* 优化placeholder样式 */
+        .form-control::placeholder,
+        .form-select::placeholder {
+            color: #9ca3af !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            opacity: 0.8 !important;
+        }
+
+        .form-control::-webkit-input-placeholder {
+            color: #9ca3af !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            opacity: 0.8 !important;
+        }
+
+        .form-control::-moz-placeholder {
+            color: #9ca3af !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            opacity: 0.8 !important;
+        }
+
+        .form-control:-ms-input-placeholder {
+            color: #9ca3af !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            opacity: 0.8 !important;
+        }
+
+        /* 立即响应复选框样式 */
+        .form-check-input,
+        input[type="checkbox"].form-check-input {
+            border-radius: 4px !important;
+            border: 1px solid #D1D5DB !important;
+            width: 1rem !important;
+            height: 1rem !important;
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+            cursor: pointer !important;
+            transition-duration: 0s !important;
+            transition-delay: 0s !important;
+            animation-duration: 0s !important;
+            animation-delay: 0s !important;
+        }
+
+        .form-check-input:checked,
+        input[type="checkbox"].form-check-input:checked {
+            background-color: #1E3A8A !important;
+            border-color: #1E3A8A !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .form-check-input:focus,
+        input[type="checkbox"].form-check-input:focus {
+            border-color: #1E3A8A !important;
+            box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2) !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .form-check-label {
+            cursor: pointer !important;
+            user-select: none !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        /* 开关样式复选框优化 */
+        .form-check.form-switch .form-check-input {
+            width: 3rem !important;
+            height: 1.5rem !important;
+            border-radius: 2rem !important;
+            background-color: #e5e7eb !important;
+            border: 2px solid #d1d5db !important;
+            cursor: pointer !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .form-check.form-switch .form-check-input:checked {
+            background-color: #1E3A8A !important;
+            border-color: #1E3A8A !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .form-check.form-switch .form-check-input:focus {
+            border-color: #1E3A8A !important;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15) !important;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .form-check.form-switch .form-check-label {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #374151 !important;
+            margin-left: 0.75rem !important;
+            line-height: 1.4 !important;
+        }
+
+        .form-check.form-switch {
+            padding: 1rem !important;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+            border: 1px solid #bae6fd !important;
+            border-radius: 12px !important;
+            margin-top: 1rem !important;
+        }
+
+        /* 按钮美化 */
+        .btn-primary {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3) !important;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background: #5a6268;
+        }
+
+        /* 文件上传区域美化 - 紧凑版本 */
+        .upload-area {
+            border: 2px dashed var(--market-primary);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--market-light) 0%, #f8f9fa 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--market-secondary);
+            background: linear-gradient(135deg, #e8f5e9 0%, var(--market-light) 100%);
+            transform: scale(1.01);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--market-secondary) !important;
+            background: linear-gradient(135deg, #e8f5e9 0%, var(--market-light) 100%) !important;
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--market-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* 加载状态美化 */
+        .loading-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid var(--market-light);
+            border-top: 4px solid var(--market-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                border-radius: 15px;
+            }
+
+            .module-header {
+                padding: 2rem 1rem;
+            }
+
+            .module-title {
+                font-size: 2rem;
+            }
+
+            .form-section {
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem !important;
+            }
+
+            .card-header-custom {
+                padding: 0.75rem 1rem !important;
+            }
+        }
+
+        /* 保持原有表格样式的兼容性 */
+        .competitor-overview-section {
+            margin: 2rem 0;
+        }
+
+        /* 确保加载遮罩层默认隐藏 */
+        #market-loading-overlay {
+            display: none !important;
+        }
+
+        /* 报告区域标题样式调整 */
+        #market-report-section .section-title {
+            color: var(--market-primary);
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        /* 报告展示区域宽度限制 */
+        #market-report-section {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+        }
+
+        /* 报告操作按钮样式 */
+        .market-report-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* 竞争对手截图板块高度优化 */
+        .info-card .card-body {
+            padding: 1rem 1.5rem !important;
+        }
+
+        .info-card .alert {
+            margin-bottom: 1rem !important;
+            padding: 0.5rem 1rem !important;
+        }
+
+        .upload-area .market-file-upload-content h6 {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .upload-area .market-file-upload-content small {
+            font-size: 0.85rem;
+        }
+
+        /* 文件预览区域优化 */
+        .market-file-preview .alert {
+            margin-bottom: 0.5rem !important;
+        }
+
+        .market-image-preview {
+            margin-top: 0.5rem;
+        }
+
+        /* 表单行间距优化 */
+        .row.g-3 {
+            --bs-gutter-y: 1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="page-navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-map-marked-alt me-2"></i>商圈调研分析
+            </a>
+            <div class="nav-links">
+                <a href="index.html">
+                    <i class="fas fa-home me-1"></i>返回主页
+                </a>
+                <a href="brand-analysis.html">
+                    <i class="fas fa-chart-line me-1"></i>品牌定位分析
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <!-- 主要内容区域 -->
+        <main class="main-container">
+            <!-- 模块头部 -->
+            <div class="module-header">
+                <h1 class="module-title">
+                    <i class="fas fa-store me-3"></i>
+                    商圈调研分析
+                </h1>
+                <p class="module-subtitle">基于AI智能分析，为呈尚策划运营部提供专业的商圈调研和竞争对手分析</p>
+            </div>
+
+            <!-- 商圈调研分析 - 输入表单区域 -->
+            <section id="market-input-section" class="form-section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="section-title">
+                            <i class="fas fa-edit"></i>
+                            商圈调研信息输入
+                        </h2>
+                    </div>
+                </div>
+
+                <form id="market-survey-form" class="needs-validation" novalidate>
+                    <!-- 基础信息卡片 -->
+                    <div class="info-card mb-4">
+                        <div class="card-header-custom">
+                            <h4 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                基础信息
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="market-areaName" class="form-label">
+                                        店铺名称 <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-store text-success"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="market-areaName" name="areaName"
+                                               placeholder="请输入店铺名称" maxlength="50" required>
+                                        <div class="invalid-feedback">
+                                            请输入店铺名称
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="market-location" class="form-label">
+                                        经营品类 <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-utensils text-success"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="market-location" name="location"
+                                               placeholder="如：中式快餐、奶茶饮品、烘焙甜品等" maxlength="100" required>
+                                        <div class="invalid-feedback">
+                                            请输入经营品类
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="market-areaType" class="form-label">
+                                        店铺地址 <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-map-marker-alt text-success"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="market-areaType" name="areaType"
+                                               placeholder="请输入店铺具体地址，如：北京市朝阳区三里屯太古里" maxlength="100" required>
+                                        <div class="invalid-feedback">
+                                            请输入店铺地址
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">
+                                        <i class="fas fa-robot me-1"></i>
+                                        AI分析引擎
+                                    </label>
+                                    <div class="api-info-display">
+                                        <div class="api-option selected">
+                                            <div class="api-option-header">
+                                                <div class="api-icon">
+                                                    <i class="fas fa-bolt" style="color: #ff6b35;"></i>
+                                                </div>
+                                                <div class="api-info">
+                                                    <h6 class="api-name mb-0">Gemini 2.5 Flash Lite</h6>
+                                                    <small class="api-provider text-muted">haxiaiplus.cn</small>
+                                                </div>
+                                                <div class="api-status">
+                                                    <span class="badge bg-success">稳定</span>
+                                                </div>
+                                            </div>
+                                            <div class="api-description">
+                                                <small class="text-muted">Gemini 2.5 Flash Lite模型，支持截图分析，性能稳定</small>
+                                            </div>
+                                            <div class="api-features">
+                                                <span class="feature-tag">支持截图分析</span>
+                                                <span class="feature-tag">响应快速</span>
+                                                <span class="feature-tag">性能稳定</span>
+                                                <span class="feature-tag">多模态支持</span>
+                                                <span class="feature-tag feature-supported">✓ 支持截图分析</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 竞争对手截图分析卡片 -->
+                    <div class="info-card mb-4">
+                        <div class="card-header-custom">
+                            <h4 class="mb-0">
+                                <i class="fas fa-camera me-2"></i>
+                                竞争对手截图分析
+                            </h4>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="alert alert-info border-0 mb-3 py-2" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>功能说明：</strong>上传竞争对手截图，AI将自动分析产品、定价策略等信息，支持美团、饿了么等外卖平台。
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="market-storeName" class="form-label">
+                                        您的店铺名称
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user-tag text-success"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="market-storeName" name="storeName"
+                                               placeholder="请输入您的店铺名称，用于区分竞争对手" maxlength="50">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="market-screenshot" class="form-label">
+                                        竞争对手截图
+                                    </label>
+                                    <div class="upload-area" id="market-file-upload-area">
+                                        <input type="file" id="market-screenshot" name="screenshot"
+                                               accept="image/jpeg,image/jpg,image/png,image/webp"
+                                               style="display: none;">
+                                        <div class="market-file-upload-content">
+                                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                            <h6 class="mt-2 mb-1">点击上传或拖拽截图到此处</h6>
+                                            <small class="text-muted">支持JPG、PNG、WEBP格式，最大10MB</small>
+                                        </div>
+                                        <div class="market-file-preview" id="market-file-preview" style="display: none;">
+                                            <div class="alert alert-success border-0 py-2 d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-image text-success me-2"></i>
+                                                    <div>
+                                                        <span class="market-file-name fw-bold"></span>
+                                                        <small class="market-file-size text-muted d-block"></small>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="market-file-remove" title="移除文件">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="market-image-preview text-center" id="market-image-preview" style="display: none;">
+                                                <img id="market-preview-image" src="" alt="预览图片" class="img-thumbnail" style="
+                                                    max-width: 250px;
+                                                    max-height: 150px;
+                                                    border: 2px solid var(--market-primary);
+                                                ">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-2">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="market-enableScreenshotAnalysis" name="enableScreenshotAnalysis" checked>
+                                        <label class="form-check-label" for="market-enableScreenshotAnalysis">
+                                            <i class="fas fa-robot me-2 text-success"></i>
+                                            启用AI截图分析功能
+                                            <small class="text-muted d-block">将使用AI智能分析上传的竞争对手截图</small>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 图片拼接功能按钮 -->
+                                <div class="col-12 mt-3">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="openImageMerger()">
+                                            <i class="fas fa-images me-2"></i>
+                                            图片拼接工具
+                                        </button>
+                                        <small class="text-muted">
+                                            打开专用工具上传并拼接多张截图
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="form-actions">
+                        <button type="submit" id="market-generateBtn" class="btn btn-primary">
+                            <span class="market-btn-text">
+                                <i class="fas fa-chart-line me-2"></i>
+                                生成商圈分析报告
+                            </span>
+                            <span class="market-btn-loading" style="display: none;">
+                                <div class="loading-spinner me-2"></div>
+                                正在生成中...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- 商圈调研分析 - 报告展示区域 -->
+            <section id="market-report-section" class="form-section" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="section-title mb-0">
+                        <i class="fas fa-chart-bar"></i>
+                        商圈调研分析报告
+                    </h2>
+                    <div class="market-report-actions">
+                        <div class="theme-selector">
+                            <span class="theme-selector-label">主题:</span>
+                            <div class="theme-options">
+                                <div class="theme-option theme-blue-option active" data-theme="blue" title="深蓝色主题"></div>
+                                <div class="theme-option theme-green-option" data-theme="green" title="绿色主题"></div>
+                                <div class="theme-option theme-purple-option" data-theme="purple" title="紫色主题"></div>
+                                <div class="theme-option theme-orange-option" data-theme="orange" title="橙色主题"></div>
+                                <div class="theme-option theme-red-option" data-theme="red" title="红色主题"></div>
+                            </div>
+                        </div>
+                        <button id="market-copyNameBtn" class="btn btn-primary">
+                            <i class="fas fa-copy me-2"></i>
+                            复制名称
+                        </button>
+                        <button id="market-downloadPdfBtn" class="btn btn-primary ms-2" disabled>
+                            <i class="fas fa-file-pdf me-2"></i>
+                            下载PDF
+                        </button>
+                        <button id="market-screenshot-btn" class="btn btn-outline-primary ms-2" title="启动截图工具对调研报告进行截图">
+                            <i class="fas fa-camera me-2"></i>
+                            截图
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 报告内容卡片 -->
+                <div class="info-card">
+                    <div id="market-report-content" class="card-body p-4">
+                        <!-- 报告内容将通过JavaScript动态插入 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 商圈调研分析 - 加载状态 -->
+            <div id="market-loading-overlay" class="loading-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="display: none; z-index: 9999;">
+                <div class="text-center p-5 bg-white rounded-4 shadow-lg">
+                    <div class="loading-spinner mx-auto mb-3"></div>
+                    <h5 class="text-success mb-2">正在调用AI生成商圈分析报告...</h5>
+                    <p class="text-muted mb-0">请稍候，这可能需要10-30秒</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="app-footer">
+            <div class="container">
+                <p>&copy; 2025 商圈调研分析平台 - 基于Gemini 2.5 Flash Lite AI智能分析技术</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 第三方库 -->
+    <!-- Chart.js: 图表生成库 - 多CDN备用方案 -->
+    <script>
+        // Chart.js 多CDN加载方案
+        (function() {
+            const chartCDNs = [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js'
+            ];
+
+            let currentCDN = 0;
+
+            function loadChart() {
+                if (currentCDN >= chartCDNs.length) {
+                    console.error('[Chart.js] 所有CDN都加载失败');
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = chartCDNs[currentCDN];
+                script.onload = function() {
+                    console.log(`[Chart.js] 从 ${chartCDNs[currentCDN]} 加载成功`);
+                };
+                script.onerror = function() {
+                    console.warn(`[Chart.js] ${chartCDNs[currentCDN]} 加载失败，尝试下一个CDN`);
+                    currentCDN++;
+                    loadChart();
+                };
+                document.head.appendChild(script);
+            }
+
+            // 检查是否已经加载
+            if (typeof Chart === 'undefined') {
+                loadChart();
+            }
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script src="js/report-template.js"></script>
+    <script src="js/report-renderer.js"></script>
+    <script src="js/screenshot.js"></script>
+
+    <!-- FastAPI重构版：运行时配置 + 后端API调用 -->
+    <script src="js/runtime-config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/pages/common.js"></script>
+    <script src="js/pages/market-research.js"></script>
+
+    <!-- 立即执行脚本：确保页面正常显示 -->
+    <script>
+        (function() {
+            // 立即隐藏加载遮罩层
+            function forceHideLoading() {
+                const loadingOverlay = document.getElementById('market-loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.style.setProperty('display', 'none', 'important');
+                    console.log('强制隐藏加载遮罩层');
+                }
+            }
+
+            // 页面加载完成后立即执行
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', forceHideLoading);
+            } else {
+                forceHideLoading();
+            }
+
+            // 额外保险：延迟执行
+            setTimeout(forceHideLoading, 100);
+        })();
+    </script>
+
+    <!-- Bootstrap 5 表单验证和UI增强 -->
+    <script>
+        // Bootstrap 5 表单验证
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // 获取所有需要验证的表单
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // 循环并阻止提交
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        // 页面加载完成后立即隐藏加载状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 立即隐藏加载遮罩层
+            const loadingOverlay = document.getElementById('market-loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+                console.log('页面加载完成，已隐藏加载遮罩层');
+            }
+
+            // 确保表单区域可见
+            const inputSection = document.getElementById('market-input-section');
+            if (inputSection) {
+                inputSection.style.display = 'block';
+            }
+        });
+
+        // 文件上传功能已移至 MarketFormHandler 类中统一管理
+        // 避免重复事件监听器导致的双重弹窗问题
+
+        // 添加输入框焦点效果
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('shadow-sm');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('shadow-sm');
+            });
+        });
+
+        // 商圈调研模块初始化
+        console.log('[商圈调研] 使用统一的Gemini 2.5 Flash Lite API');
+
+        // 图片拼接功能 - 直接跳转到拼接页面
+        function openImageMerger() {
+            // 在当前页面跳转到图片拼接页面
+            window.location.href = 'image-merger.html';
+        }
+
+        // 商圈调研截图管理器
+        class MarketScreenshotManager {
+            constructor() {
+                this.isLocalEnvironment = false;
+                this.init();
+            }
+
+            async init() {
+                await this.checkEnvironment();
+                this.bindEvents();
+                this.updateButtonState();
+            }
+
+            async checkEnvironment() {
+                try {
+                    const response = await fetch('/api/check-screenshot-app');
+                    const data = await response.json();
+                    this.isLocalEnvironment = data.available;
+                } catch (error) {
+                    this.isLocalEnvironment = false;
+                }
+            }
+
+            bindEvents() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                if (screenshotBtn) {
+                    screenshotBtn.addEventListener('click', () => this.handleScreenshot());
+                }
+            }
+
+            updateButtonState() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                if (!screenshotBtn) return;
+
+                if (this.isLocalEnvironment) {
+                    screenshotBtn.innerHTML = '<i class="fas fa-camera me-2"></i>截图';
+                    screenshotBtn.title = '启动FSRecorder截图工具';
+                } else {
+                    screenshotBtn.innerHTML = '<i class="fas fa-info-circle me-2"></i>截图指导';
+                    screenshotBtn.title = '查看截图操作指导';
+                }
+            }
+
+            async handleScreenshot() {
+                if (this.isLocalEnvironment) {
+                    await this.launchScreenshotApp();
+                } else {
+                    this.showScreenshotGuide();
+                }
+            }
+
+            async launchScreenshotApp() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                const originalContent = screenshotBtn.innerHTML;
+
+                try {
+                    screenshotBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>启动中...';
+                    screenshotBtn.disabled = true;
+
+                    const response = await fetch('/api/launch-screenshot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert('✅ FSRecorder截图工具启动成功！', 'success');
+                    } else {
+                        throw new Error(data.error || '启动失败');
+                    }
+                } catch (error) {
+                    this.showAlert('❌ 启动截图工具失败: ' + error.message, 'danger');
+                } finally {
+                    screenshotBtn.innerHTML = originalContent;
+                    screenshotBtn.disabled = false;
+                }
+            }
+
+            showScreenshotGuide() {
+                const modal = `
+                    <div class="modal fade" id="marketScreenshotGuideModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-camera text-primary me-2"></i>
+                                        截图操作指导
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        当前为在线环境，请手动进行截图操作
+                                    </div>
+
+                                    <h6>推荐截图方法：</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Windows:</strong> Win + Shift + S (截图工具)</li>
+                                        <li><strong>Mac:</strong> Cmd + Shift + 4 (区域截图)</li>
+                                        <li><strong>浏览器:</strong> 开发者工具 → 设备模拟 → 截图</li>
+                                    </ul>
+
+                                    <div class="alert alert-warning">
+                                        <strong>提示:</strong> 建议截图包含完整的调研报告和图表
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">我知道了</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modal);
+                const modalElement = new bootstrap.Modal(document.getElementById('marketScreenshotGuideModal'));
+                modalElement.show();
+
+                document.getElementById('marketScreenshotGuideModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
+
+            showAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // 页面加载完成后初始化截图管理器
+        setTimeout(() => {
+            window.marketScreenshotManager = new MarketScreenshotManager();
+        }, 1000);
+    </script>
+</body>
+</html>

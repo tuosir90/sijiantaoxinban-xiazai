@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店铺活动方案生成 - 外卖店铺四件套方案生成系统</title>
+    
+    <!-- Tailwind CSS + DaisyUI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/store-activity.css">
+    <!-- PDF导出专用样式 -->
+    <link rel="stylesheet" href="css/pdf-styles.css?v=20250114-01">
+    <link rel="stylesheet" href="css/report-template.css">
+
+    <!-- Chart.js 用于数据可视化 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <!-- 导航栏 -->
+    <div class="navbar bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
+        <div class="navbar-start">
+            <a href="index.html" class="btn btn-ghost text-xl">
+                <i class="fas fa-arrow-left mr-2"></i>
+                返回主页
+            </a>
+        </div>
+        <div class="navbar-center">
+            <h1 class="text-2xl font-bold">
+                <i class="fas fa-store mr-2"></i>
+                店铺活动方案生成
+            </h1>
+        </div>
+        <div class="navbar-end">
+            <!-- 主题切换器 -->
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow text-base-content">
+                    <li><a data-theme="light">浅色主题</a></li>
+                    <li><a data-theme="dark">深色主题</a></li>
+                    <li><a data-theme="cupcake">蛋糕主题</a></li>
+                    <li><a data-theme="corporate">企业主题</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- 输入表单区域 -->
+        <div id="input-section" class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-3xl mb-6">
+                    <i class="fas fa-edit text-orange-500"></i>
+                    店铺信息录入
+                </h2>
+                
+                <form id="store-activity-form" class="space-y-6">
+                    <!-- 店铺基本信息 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text text-lg font-semibold">
+                                    <i class="fas fa-store-alt text-orange-500 mr-2"></i>
+                                    店铺名称
+                                </span>
+                            </label>
+                            <input type="text" id="store-name" name="storeName" 
+                                   placeholder="请输入店铺名称，如：九格热浪火锅" 
+                                   class="input input-bordered input-lg w-full" required>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text text-lg font-semibold">
+                                    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                                    店铺地址
+                                </span>
+                            </label>
+                            <input type="text" id="store-address" name="storeAddress" 
+                                   placeholder="请输入店铺地址，如：北京市朝阳区xxx街道" 
+                                   class="input input-bordered input-lg w-full" required>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text text-lg font-semibold">
+                                    <i class="fas fa-utensils text-green-500 mr-2"></i>
+                                    经营品类
+                                </span>
+                            </label>
+                            <input type="text" id="business-category" name="businessCategory" 
+                                   placeholder="请输入经营品类，如：火锅、川菜、快餐等" 
+                                   class="input input-bordered input-lg w-full" required>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text text-lg font-semibold">
+                                    <i class="fas fa-clock text-blue-500 mr-2"></i>
+                                    营业时间
+                                </span>
+                            </label>
+                            <input type="text" id="business-hours" name="businessHours" 
+                                   placeholder="请输入营业时间，如：10:00-22:00" 
+                                   class="input input-bordered input-lg w-full" required>
+                        </div>
+                    </div>
+                    
+                    <!-- 菜品价格信息 -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text text-lg font-semibold">
+                                <i class="fas fa-list-ul text-purple-500 mr-2"></i>
+                                菜品名称和价格
+                            </span>
+                            <span class="label-text-alt text-sm text-gray-500">
+                                请按照"菜品名称 价格"的格式输入，每行一个菜品
+                            </span>
+                        </label>
+                        <textarea id="menu-items" name="menuItems" 
+                                  placeholder="示例格式：&#10;麻辣牛肉火锅 68元&#10;番茄鱼片火锅 58元&#10;招牌毛肚 28元&#10;精品鸭血 18元&#10;手工丸子拼盘 32元&#10;...&#10;&#10;请输入30-50行菜品信息" 
+                                  class="textarea textarea-bordered h-64 text-base leading-relaxed" 
+                                  rows="20" required></textarea>
+                        <div class="label">
+                            <span class="label-text-alt text-xs text-gray-400">
+                                建议输入30-50个菜品，包含主菜、配菜、饮品等完整菜单
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 生成按钮 -->
+                    <div class="form-control mt-8">
+                        <button type="submit" id="generate-btn" 
+                                class="btn btn-lg bg-gradient-to-r from-orange-500 to-red-500 text-white border-none hover:from-orange-600 hover:to-red-600 shadow-lg">
+                            <i class="fas fa-magic mr-2"></i>
+                            生成店铺活动报告
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 加载状态 -->
+        <div id="loading-section" class="hidden">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body text-center py-16">
+                    <div class="loading loading-spinner loading-lg text-orange-500 mx-auto mb-4"></div>
+                    <h3 class="text-2xl font-bold mb-2">正在生成活动方案...</h3>
+                    <p class="text-gray-600">AI正在分析您的店铺信息，预计需要15-30秒</p>
+                    <div class="mt-4">
+                        <progress class="progress progress-warning w-56" value="0" max="100" id="progress-bar"></progress>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 报告显示区域 -->
+        <div id="report-section" class="hidden">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="card-title text-3xl">
+                            <i class="fas fa-file-alt text-orange-500"></i>
+                            活动方案报告
+                        </h2>
+                        <div class="flex gap-2">
+                            <button id="copy-report-name" class="btn btn-outline btn-sm">
+                                <i class="fas fa-copy mr-1"></i>
+                                复制名称
+                            </button>
+                            <button id="download-pdf" class="btn btn-sm bg-orange-500 hover:bg-orange-600 text-white border-none" disabled>
+                                <i class="fas fa-file-pdf mr-1"></i>
+                                下载PDF
+                            </button>
+                            <button id="screenshot-btn" class="btn btn-outline btn-sm" title="启动截图工具对方案进行截图">
+                                <i class="fas fa-camera mr-1"></i>
+                                截图
+                            </button>
+                            <button id="new-analysis" class="btn btn-sm bg-orange-500 hover:bg-orange-600 text-white border-none">
+                                <i class="fas fa-plus mr-1"></i>
+                                新建分析
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 报告内容将在这里动态生成 -->
+                    <div id="report-content" class="prose max-w-none">
+                        <!-- 动态内容 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script src="js/report-template.js"></script>
+    <script src="js/report-renderer.js"></script>
+    <script src="js/screenshot.js"></script>
+
+    <!-- FastAPI重构版：运行时配置 + 后端API调用 -->
+    <script src="js/runtime-config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/pages/common.js"></script>
+    <script src="js/pages/store-activity.js"></script>
+
+    <!-- 截图功能 -->
+    <script>
+        function showScreenshotGuide() {
+            alert("当前为在线环境，请使用系统截图工具手动截取报告");
+        }
+        const btn = document.getElementById("screenshot-btn");
+        if (btn) btn.addEventListener("click", showScreenshotGuide);
+    </script>
+</body>
+</html>
