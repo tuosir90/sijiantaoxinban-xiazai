@@ -38,7 +38,7 @@
     }
 
     header {
-      padding: 28px 32px;
+      padding: 32px 32px 30px;
       border-radius: 22px;
       background: linear-gradient(120deg, #ede2d0 0%, #f7efe2 55%, #efe4d4 100%);
       border: 1px solid #e6d8c5;
@@ -57,10 +57,31 @@
       background: radial-gradient(circle, rgba(155, 91, 42, 0.18), rgba(155, 91, 42, 0));
     }
 
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(155, 91, 42, 0.12);
+      color: #8a4b1f;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9b5b2a;
+      display: inline-block;
+    }
+
     .title {
       font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
       font-size: 2.2rem;
-      margin: 0 0 8px;
+      margin: 12px 0 8px;
       letter-spacing: 1px;
     }
 
@@ -287,6 +308,7 @@
 <body>
   <div class="page">
     <header>
+      <div class="brand-mark"><span class="brand-dot"></span>呈尚策划</div>
       <h1 class="title">外卖店铺四件套一页生成台</h1>
       <p class="subtitle">一页填写四份方案，点击按钮直接下载 PDF，省去预览步骤。</p>
     </header>
