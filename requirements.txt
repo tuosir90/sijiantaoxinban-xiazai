@@ -1,0 +1,7 @@
+fastapi==0.115.6
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-multipart==0.0.9
+httpx==0.28.1
+reportlab==4.2.5
+Pillow==11.1.0
