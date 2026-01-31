@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, timedelta, timezone
+import re
 from typing import Any
 
 import httpx
@@ -29,6 +30,57 @@ def apply_cover_defaults(report: ReportData, *, now: datetime | None = None) -> 
     ts = now or _china_now()
     report.cover.period_text = f"{ts.year}年{ts.month:02d}月"
     report.cover.plan_date = ts.strftime("%Y-%m-%d")
+
+
+def _replace_date_text(text: str, ts: datetime) -> str:
+    if not text:
+        return ""
+    s = str(text)
+    year = ts.year
+    month = ts.month
+    day = ts.day
+
+    def repl_sep(match: re.Match) -> str:
+        sep = match.group(2)
+        return f"{year}{sep}{month:02d}{sep}{day:02d}"
+
+    def repl_cn(match: re.Match) -> str:
+        return f"{year}年{month:02d}月{day:02d}日"
+
+    def repl_sep_month(match: re.Match) -> str:
+        sep = match.group(2)
+        return f"{year}{sep}{month:02d}"
+
+    def repl_cn_month(match: re.Match) -> str:
+        return f"{year}年{month:02d}月"
+
+    s = re.sub(r"(20\d{2})([-/.])(1[0-2]|0?[1-9])\2([12]\d|3[01]|0?[1-9])", repl_sep, s)
+    s = re.sub(r"(20\d{2})年(1[0-2]|0?[1-9])月([12]\d|3[01]|0?[1-9])日?", repl_cn, s)
+    s = re.sub(r"(20\d{2})([-/.])(1[0-2]|0?[1-9])(?!\2[0-3]?\d)", repl_sep_month, s)
+    s = re.sub(r"(20\d{2})年(1[0-2]|0?[1-9])月", repl_cn_month, s)
+    return s
+
+
+def apply_content_date_defaults(report: ReportData, *, now: datetime | None = None) -> None:
+    ts = now or _china_now()
+    for section in report.sections:
+        section.title = _replace_date_text(section.title, ts)
+        section.summary = _replace_date_text(section.summary, ts)
+        for block in section.blocks:
+            if block.type in {"paragraph", "subtitle"}:
+                block.text = _replace_date_text(block.text, ts)
+            elif block.type == "bullets":
+                block.items = [_replace_date_text(item, ts) for item in block.items]
+            elif block.type == "table":
+                block.headers = [_replace_date_text(item, ts) for item in block.headers]
+                block.rows = [
+                    [_replace_date_text(item, ts) for item in row]
+                    for row in block.rows
+                ]
+            elif block.type == "highlight_cards":
+                for item in block.items:
+                    item.title = _replace_date_text(item.title, ts)
+                    item.text = _replace_date_text(item.text, ts)
 
 
 def _trim_text(text: str, *, limit: int = 2000) -> str:
@@ -131,4 +183,5 @@ async def generate_pdf_bytes(
 
     report = ReportData.model_validate(data)
     apply_cover_defaults(report)
+    apply_content_date_defaults(report)
     return build_pdf_bytes(report, module=module)
