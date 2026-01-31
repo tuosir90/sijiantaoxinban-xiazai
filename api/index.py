@@ -10,7 +10,7 @@ from typing import Any
 from urllib.parse import quote
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BACKEND_DIR = PROJECT_ROOT / "backend"
@@ -25,11 +25,25 @@ from app.web_ui import render_index_html  # noqa: E402
 app = FastAPI(title="外卖四件套 PDF 生成")
 
 
+def _build_error_payload(exc: BaseException) -> dict[str, Any]:
+    if os.getenv("DIAGNOSTIC_LOGS") == "1":
+        return {"detail": f"内部错误: {exc}", "type": exc.__class__.__name__}
+    return {"detail": "服务器内部错误"}
+
+
 @app.middleware("http")
 async def add_debug_headers(request: Request, call_next):
-    response = await call_next(request)
+    try:
+        response = await call_next(request)
+    except BaseException as exc:
+        response = JSONResponse(status_code=500, content=_build_error_payload(exc))
     response.headers.update(build_debug_headers())
     return response
+
+
+@app.exception_handler(Exception)
+async def handle_unexpected_error(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content=_build_error_payload(exc), headers=build_debug_headers())
 
 
 @app.get("/")
