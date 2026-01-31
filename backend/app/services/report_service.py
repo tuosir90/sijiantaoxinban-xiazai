@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 import httpx
@@ -17,6 +18,23 @@ from app.settings import get_settings
 
 class ReportServiceError(RuntimeError):
     pass
+
+
+def _trim_text(text: str, *, limit: int = 2000) -> str:
+    if text is None:
+        return ""
+    s = str(text)
+    return s[:limit]
+
+
+def _log_diag(event: str, payload: dict[str, Any]) -> None:
+    if os.getenv("DIAGNOSTIC_LOGS") != "1":
+        return
+    parts = [f"诊断事件={event}"]
+    for key, value in payload.items():
+        text = _trim_text(value if isinstance(value, str) else json.dumps(value, ensure_ascii=False))
+        parts.append(f"{key}={text}")
+    print("[诊断日志] " + " | ".join(parts))
 
 
 def _select_model(settings: Any, module: str) -> str:
@@ -81,12 +99,24 @@ async def generate_pdf_bytes(
 
         try:
             data = parse_json_text(raw)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            _log_diag(
+                "json_parse_failed",
+                {"module": module, "model": model, "raw": raw},
+            )
             try:
                 repaired = await _repair_json(client, cfg, raw)
+                _log_diag(
+                    "json_repair_attempt",
+                    {"module": module, "model": model, "repaired": repaired},
+                )
                 data = parse_json_text(repaired)
-            except Exception as e:
-                raise ReportServiceError("JSON解析失败，且修复无效") from e
+            except Exception as err:
+                _log_diag(
+                    "json_repair_failed",
+                    {"module": module, "model": model, "error": str(err)},
+                )
+                raise ReportServiceError("JSON解析失败，且修复无效") from err
 
     report = ReportData.model_validate(data)
     return build_pdf_bytes(report, module=module)
