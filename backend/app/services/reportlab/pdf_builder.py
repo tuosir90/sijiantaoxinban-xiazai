@@ -5,13 +5,9 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
-import os
-
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import SimpleDocTemplate, Spacer
-from reportlab.platypus.flowables import KeepTogether, _listWrapOn
+from reportlab.platypus import PageBreak, SimpleDocTemplate, Spacer
 
 from app.domain.report_schema import ReportData
 from app.services.reportlab.blocks import (
@@ -32,45 +28,9 @@ LEFT_MARGIN_MM = 22
 RIGHT_MARGIN_MM = 22
 TOP_MARGIN_MM = 18
 BOTTOM_MARGIN_MM = 18
-EXTRA_PADDING_MM = 6
 
 
-def _parse_height_mm() -> float | None:
-    raw = (os.getenv("PDF_LONG_PAGE_HEIGHT_MM") or "").strip()
-    if not raw:
-        return None
-    try:
-        value = float(raw)
-    except ValueError:
-        return None
-    if value <= 0:
-        return None
-    return value
-
-
-def _estimate_story_height(story: list, frame_width: float) -> float:
-    canvas = Canvas(BytesIO(), pagesize=A4)
-    flat: list = []
-    stack = list(story)
-    while stack:
-        item = stack.pop(0)
-        if isinstance(item, KeepTogether):
-            stack[0:0] = list(getattr(item, "_content", []))
-            continue
-        flat.append(item)
-    _, height = _listWrapOn(flat, frame_width, canvas)
-    return height
-
-
-def get_pagesize(story: list | None = None) -> tuple[float, float]:
-    height_mm = _parse_height_mm()
-    if height_mm is not None:
-        return (A4[0], height_mm * mm)
-    if story:
-        frame_width = A4[0] - (LEFT_MARGIN_MM + RIGHT_MARGIN_MM) * mm
-        content_height = _estimate_story_height(story, frame_width)
-        total_height = content_height + (TOP_MARGIN_MM + BOTTOM_MARGIN_MM + EXTRA_PADDING_MM) * mm
-        return (A4[0], max(total_height, A4[1]))
+def get_pagesize() -> tuple[float, float]:
     return A4
 
 
@@ -87,7 +47,9 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
 
     story: list = []
     story.extend(build_cover(report.cover, styles, theme))
+    story.append(PageBreak())
     story.extend(build_toc(report.sections, styles, theme))
+    story.append(PageBreak())
 
     for idx, section in enumerate(report.sections, 1):
         story.extend(build_section_title(idx, section.title, styles, theme))
@@ -107,7 +69,7 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
 
     doc = SimpleDocTemplate(
         buffer,
-        pagesize=get_pagesize(story),
+        pagesize=get_pagesize(),
         leftMargin=LEFT_MARGIN_MM * mm,
         rightMargin=RIGHT_MARGIN_MM * mm,
         topMargin=TOP_MARGIN_MM * mm,

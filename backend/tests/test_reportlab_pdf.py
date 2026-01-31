@@ -1,8 +1,5 @@
 import re
 
-import pytest
-from reportlab.lib.pagesizes import A4
-
 from app.domain.report_schema import ReportData
 from app.services.reportlab.pdf_builder import build_pdf_bytes
 
@@ -58,14 +55,12 @@ def test_build_pdf_bytes_with_subtitle_block():
     assert len(pdf_bytes) > 8000
 
 
-def _extract_media_box_height(pdf_bytes: bytes) -> float:
-    match = re.search(rb"/MediaBox\s*\[\s*0\s+0\s+([0-9.]+)\s+([0-9.]+)\s*\]", pdf_bytes)
-    assert match, "未找到MediaBox"
-    return float(match.group(2))
+def _count_pages(pdf_bytes: bytes) -> int:
+    matches = re.findall(rb"/Type\s*/Page[^s]", pdf_bytes)
+    return max(len(matches), 1)
 
 
-def test_build_pdf_bytes_auto_height(monkeypatch):
-    monkeypatch.setenv("PDF_LONG_PAGE_HEIGHT_MM", "0")
+def test_build_pdf_bytes_paginated_for_long_content():
     long_text = "测试内容" * 120
     blocks = [{"type": "paragraph", "text": long_text} for _ in range(20)]
     data = {
@@ -86,45 +81,6 @@ def test_build_pdf_bytes_auto_height(monkeypatch):
         ],
     }
     report = ReportData.model_validate(data)
-    try:
-        pdf_bytes = build_pdf_bytes(report, module="brand")
-    except Exception as exc:
-        pytest.fail(f"生成PDF失败: {exc}")
-    height = _extract_media_box_height(pdf_bytes)
-    assert height > A4[1]
-    assert height < A4[1] * 8
-
-
-def test_build_pdf_bytes_auto_height_with_highlight_cards(monkeypatch):
-    monkeypatch.setenv("PDF_LONG_PAGE_HEIGHT_MM", "0")
-    data = {
-        "cover": {
-            "store_name": "示例店",
-            "report_title": "品牌定位分析",
-            "report_subtitle": "副标题",
-            "business_line": "主营：快餐简餐",
-            "period_text": "2026年01月",
-            "plan_date": "2026-01-31",
-        },
-        "sections": [
-            {
-                "title": "定位结论",
-                "summary": "结论摘要",
-                "blocks": [
-                    {
-                        "type": "highlight_cards",
-                        "items": [
-                            {"title": "核心定位", "text": "测试内容"},
-                            {"title": "目标客群", "text": "测试内容"},
-                        ],
-                    }
-                ],
-            }
-        ],
-    }
-    report = ReportData.model_validate(data)
-    try:
-        pdf_bytes = build_pdf_bytes(report, module="brand")
-    except Exception as exc:
-        pytest.fail(f"生成PDF失败: {exc}")
+    pdf_bytes = build_pdf_bytes(report, module="brand")
     assert pdf_bytes[:4] == b"%PDF"
+    assert _count_pages(pdf_bytes) >= 2
