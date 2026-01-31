@@ -571,6 +571,36 @@
 
       const illegalFilenameChars = /[\\\\/:*?\"<>|]/g;
 
+      const isTauriEnvironment = () =>
+        typeof window !== "undefined" &&
+        window.__TAURI__ &&
+        window.__TAURI__.core &&
+        typeof window.__TAURI__.core.invoke === "function";
+
+      const saveBinaryInTauri = async (bytes, filename, filters) => {
+        const filePath = await window.__TAURI__.core.invoke("plugin:dialog|save", {
+          options: {
+            defaultPath: filename,
+            title: "保存文件",
+            filters
+          }
+        });
+        if (!filePath) {
+          return { canceled: true };
+        }
+        await window.__TAURI__.core.invoke(
+          "plugin:fs|write_file",
+          bytes,
+          {
+            headers: {
+              path: encodeURIComponent(filePath),
+              options: JSON.stringify({})
+            }
+          }
+        );
+        return { canceled: false, path: filePath };
+      };
+
       const safeText = (el, text) => {
         if (el) el.textContent = text || "";
       };
@@ -808,14 +838,28 @@
               throw new Error(message || "生成失败");
             }
 
-            const blob = await response.blob();
             const headerFilename = parseDispositionFilename(response.headers.get("content-disposition"));
             const storeName = sanitizeFilename(payload.storeName || payload.areaName || "未命名店铺");
             const fallbackName = `${storeName}_${reportName}.pdf`;
             const downloadName = fallbackName || sanitizeFilename(headerFilename);
 
-            triggerDownload(blob, downloadName);
-            safeText(statusEl, "PDF已开始下载");
+            if (isTauriEnvironment()) {
+              const buffer = await response.arrayBuffer();
+              const bytes = new Uint8Array(buffer);
+              const result = await saveBinaryInTauri(bytes, downloadName, [
+                { name: "PDF文件", extensions: ["pdf"] },
+                { name: "所有文件", extensions: ["*"] }
+              ]);
+              if (result.canceled) {
+                safeText(statusEl, "已取消保存");
+                return;
+              }
+              safeText(statusEl, "PDF已保存");
+            } else {
+              const blob = await response.blob();
+              triggerDownload(blob, downloadName);
+              safeText(statusEl, "PDF已开始下载");
+            }
           } catch (err) {
             safeText(statusEl, "");
             safeText(errorEl, `下载失败：${err && err.message ? err.message : err}`);

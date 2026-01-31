@@ -67,6 +67,28 @@ vercel dev
 - PDF 在浏览器侧生成，首次加载请等待字体资源加载完成。
 - 若浏览器弹出下载拦截，请允许下载。
 
+## Tauri 导出/下载兼容说明
+
+若需在 Tauri 桌面应用中运行，前端已内置 Tauri 环境检测与保存对话框调用。请确保 `tauri.conf.json` 已开启以下插件权限：
+
+```json
+{
+  "plugins": {
+    "dialog": {
+      "all": true,
+      "save": true
+    },
+    "fs": {
+      "all": true,
+      "writeFile": true,
+      "scope": ["$DOWNLOAD/**", "$DESKTOP/**", "$DOCUMENT/**", "**"]
+    }
+  }
+}
+```
+
+说明：Tauri 环境下会自动弹出保存对话框；Web 环境仍使用浏览器下载流程。
+
 ## 文档
 
 - 设计文档：`docs/plans/2026-01-30-vercel-single-deploy-browser-pdf-design.md`
