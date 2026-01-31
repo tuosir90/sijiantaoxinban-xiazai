@@ -355,6 +355,10 @@
 
       <div class="field-grid">
         <div>
+          <label for="market-storeName">店铺名称 *</label>
+          <input id="market-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" required />
+        </div>
+        <div>
           <label for="market-areaName">商圈名称 *</label>
           <input id="market-areaName" name="areaName" type="text" placeholder="如：XX商圈" required />
         </div>
@@ -371,10 +375,6 @@
             <option value="综合商业区">综合商业区</option>
             <option value="交通枢纽">交通枢纽</option>
           </select>
-        </div>
-        <div>
-          <label for="market-storeName">拟开店/参考店铺</label>
-          <input id="market-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" />
         </div>
       </div>
 
@@ -706,6 +706,7 @@
         }
 
         if (module === "market") {
+          check("storeName");
           check("areaName");
           check("location");
           check("areaType");

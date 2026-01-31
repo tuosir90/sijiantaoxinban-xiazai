@@ -41,7 +41,7 @@ def build_market_prompt(payload: dict[str, Any]) -> str:
         f"- 商圈名称：{area_name or '未提供'}\n"
         f"- 所在位置：{location or '未提供'}\n"
         f"- 商圈类型：{area_type or '未提供'}\n"
-        f"- 拟开店/参考店铺：{store_name or '未提供'}\n"
+        f"- 运营店铺名称：{store_name or '未提供'}\n"
         f"- 截图分析：{'开启' if enable_screenshot else '关闭'}（{screenshot_hint}）\n\n"
         f"{screenshot_requirements}\n"
         "请覆盖：客群画像、消费水平、餐饮业态、竞争强度、机会点与风险点、"

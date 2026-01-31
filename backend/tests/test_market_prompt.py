@@ -25,3 +25,14 @@ def test_market_prompt_omits_screenshot_extraction_when_disabled():
     }
     prompt = build_market_prompt(payload)
     assert "截图中提取" not in prompt
+
+
+def test_market_prompt_uses_store_name_label():
+    payload = {
+        "areaName": "测试商圈",
+        "location": "测试位置",
+        "areaType": "写字楼商圈",
+        "storeName": "运营店铺A",
+    }
+    prompt = build_market_prompt(payload)
+    assert "运营店铺名称" in prompt
