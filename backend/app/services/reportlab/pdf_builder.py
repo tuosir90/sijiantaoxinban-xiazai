@@ -9,7 +9,8 @@ import os
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from reportlab.platypus import PageBreak, SimpleDocTemplate, Spacer
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.platypus import SimpleDocTemplate, Spacer
 
 from app.domain.report_schema import ReportData
 from app.services.reportlab.blocks import (
@@ -26,22 +27,50 @@ from app.services.reportlab.styles import build_styles, register_fonts
 from app.services.reportlab.theme import get_theme
 
 
-def get_pagesize() -> tuple[float, float]:
-    height_mm = float(os.getenv("PDF_LONG_PAGE_HEIGHT_MM", "4000"))
-    return (A4[0], height_mm * mm)
+LEFT_MARGIN_MM = 22
+RIGHT_MARGIN_MM = 22
+TOP_MARGIN_MM = 18
+BOTTOM_MARGIN_MM = 18
+EXTRA_PADDING_MM = 6
+
+
+def _parse_height_mm() -> float | None:
+    raw = (os.getenv("PDF_LONG_PAGE_HEIGHT_MM") or "").strip()
+    if not raw:
+        return None
+    try:
+        value = float(raw)
+    except ValueError:
+        return None
+    if value <= 0:
+        return None
+    return value
+
+
+def _estimate_story_height(story: list, frame_width: float) -> float:
+    canvas = Canvas(BytesIO(), pagesize=A4)
+    total = 0.0
+    available_height = 1_000_000
+    for flowable in story:
+        _, height = flowable.wrapOn(canvas, frame_width, available_height)
+        total += height
+    return total
+
+
+def get_pagesize(story: list | None = None) -> tuple[float, float]:
+    height_mm = _parse_height_mm()
+    if height_mm is not None:
+        return (A4[0], height_mm * mm)
+    if story:
+        frame_width = A4[0] - (LEFT_MARGIN_MM + RIGHT_MARGIN_MM) * mm
+        content_height = _estimate_story_height(story, frame_width)
+        total_height = content_height + (TOP_MARGIN_MM + BOTTOM_MARGIN_MM + EXTRA_PADDING_MM) * mm
+        return (A4[0], max(total_height, A4[1]))
+    return A4
 
 
 def build_pdf_bytes(report: ReportData, module: str) -> bytes:
     buffer = BytesIO()
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=get_pagesize(),
-        leftMargin=22 * mm,
-        rightMargin=22 * mm,
-        topMargin=18 * mm,
-        bottomMargin=18 * mm,
-    )
-
     fonts_dir = Path(__file__).resolve().parents[3] / "assets" / "fonts"
     font_name, bold_name = register_fonts(fonts_dir)
     styles = build_styles(font_name, bold_name)
@@ -70,6 +99,15 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
                 story.extend(build_highlight_cards(block.items, styles, theme))
             story.append(Spacer(1, 4 * mm))
         story.append(Spacer(1, 4 * mm))
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=get_pagesize(story),
+        leftMargin=LEFT_MARGIN_MM * mm,
+        rightMargin=RIGHT_MARGIN_MM * mm,
+        topMargin=TOP_MARGIN_MM * mm,
+        bottomMargin=BOTTOM_MARGIN_MM * mm,
+    )
 
     def _draw_footer(canvas, doc_obj):
         canvas.saveState()
