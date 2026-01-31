@@ -87,7 +87,8 @@ def build_bullets(items: Iterable[str], styles: dict) -> ListFlowable:
 
 
 def build_table(headers: list[str], rows: list[list[str]], styles: dict, theme: Theme) -> Table:
-    data = [headers] + rows
+    body_rows = [[Paragraph(str(cell), styles["body"]) for cell in row] for row in rows]
+    data = [headers] + body_rows
     col_count = max(len(headers), 1)
     col_width = 160 * mm / col_count
     table = Table(data, colWidths=[col_width] * col_count)
