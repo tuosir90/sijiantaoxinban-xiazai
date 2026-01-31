@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import httpx
@@ -18,6 +19,16 @@ from app.settings import get_settings
 
 class ReportServiceError(RuntimeError):
     pass
+
+
+def _china_now() -> datetime:
+    return datetime.now(timezone(timedelta(hours=8)))
+
+
+def apply_cover_defaults(report: ReportData, *, now: datetime | None = None) -> None:
+    ts = now or _china_now()
+    report.cover.period_text = f"{ts.year}年{ts.month:02d}月"
+    report.cover.plan_date = ts.strftime("%Y-%m-%d")
 
 
 def _trim_text(text: str, *, limit: int = 2000) -> str:
@@ -119,4 +130,5 @@ async def generate_pdf_bytes(
                 raise ReportServiceError("JSON解析失败，且修复无效") from err
 
     report = ReportData.model_validate(data)
+    apply_cover_defaults(report)
     return build_pdf_bytes(report, module=module)

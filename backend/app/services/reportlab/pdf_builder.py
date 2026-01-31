@@ -41,9 +41,10 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
     styles["title"].textColor = theme.primary
     styles["section_title"].textColor = theme.primary
     styles["toc_title"].textColor = theme.primary
+    styles["cover_brand"].textColor = theme.primary
 
     story: list = []
-    story.extend(build_cover(report.cover, styles))
+    story.extend(build_cover(report.cover, styles, theme))
     story.append(PageBreak())
     story.extend(build_toc(report.sections, styles, theme))
     story.append(PageBreak())

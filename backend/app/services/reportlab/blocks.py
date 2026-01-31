@@ -21,20 +21,38 @@ from app.domain.report_schema import HighlightCard, Section
 from app.services.reportlab.theme import Theme
 
 
-def build_cover(cover, styles: dict) -> list:
+def build_cover(cover, styles: dict, theme: Theme) -> list:
+    meta_rows = [
+        [Paragraph(cover.report_subtitle, styles["cover_meta"])],
+        [Paragraph(cover.business_line, styles["cover_meta"])],
+        [Paragraph(cover.period_text, styles["cover_meta"])],
+        [Paragraph(cover.plan_date, styles["cover_meta"])],
+    ]
+    meta_table = Table(meta_rows, colWidths=[160 * mm])
+    meta_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), theme.light),
+                ("BOX", (0, 0), (-1, -1), 1, theme.primary),
+                ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                ("TOPPADDING", (0, 0), (-1, -1), 8),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ]
+        )
+    )
+
     return [
-        Spacer(1, 40 * mm),
+        Spacer(1, 18 * mm),
+        Paragraph("呈尚策划", styles["cover_brand"]),
+        Spacer(1, 3 * mm),
+        HRFlowable(color=theme.primary, thickness=1.2, width="60%"),
+        Spacer(1, 24 * mm),
         Paragraph(cover.store_name, styles["title"]),
         Spacer(1, 6 * mm),
         Paragraph(cover.report_title, styles["subtitle"]),
-        Spacer(1, 70 * mm),
-        Paragraph(cover.report_subtitle, styles["small"]),
-        Spacer(1, 4 * mm),
-        Paragraph(cover.business_line, styles["small"]),
-        Spacer(1, 3 * mm),
-        Paragraph(cover.period_text, styles["small"]),
-        Spacer(1, 3 * mm),
-        Paragraph(cover.plan_date, styles["small"]),
+        Spacer(1, 60 * mm),
+        meta_table,
     ]
 
 

@@ -815,7 +815,7 @@
             const headerFilename = parseDispositionFilename(response.headers.get("content-disposition"));
             const storeName = sanitizeFilename(payload.storeName || payload.areaName || "未命名店铺");
             const fallbackName = `${storeName}_${reportName}.pdf`;
-            const downloadName = sanitizeFilename(headerFilename) || fallbackName;
+            const downloadName = fallbackName || sanitizeFilename(headerFilename);
 
             triggerDownload(blob, downloadName);
             safeText(statusEl, "PDF已开始下载");

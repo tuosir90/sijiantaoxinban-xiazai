@@ -96,6 +96,25 @@ def build_styles(font_name: str, bold_name: str) -> dict[str, ParagraphStyle]:
         alignment=TA_CENTER,
         textColor=colors.HexColor("#666666"),
     )
+    styles["cover_brand"] = ParagraphStyle(
+        "cover_brand",
+        parent=styles["body"],
+        fontName=bold_name,
+        fontSize=12,
+        leading=16,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#9B5B2A"),
+        letterSpacing=0.3,
+    )
+    styles["cover_meta"] = ParagraphStyle(
+        "cover_meta",
+        parent=styles["body"],
+        fontName=font_name,
+        fontSize=9,
+        leading=14,
+        alignment=TA_LEFT,
+        textColor=colors.HexColor("#555555"),
+    )
     styles["section_title"] = ParagraphStyle(
         "section_title",
         parent=styles["body"],
