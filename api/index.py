@@ -12,7 +12,9 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, Response
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+BACKEND_DIR = PROJECT_ROOT / "backend"
 sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(BACKEND_DIR))
 os.environ.setdefault("FONT_DIR", str(PROJECT_ROOT / "backend" / "assets" / "fonts"))
 
 from app.services.image_processor import process_image_to_data_url  # noqa: E402
