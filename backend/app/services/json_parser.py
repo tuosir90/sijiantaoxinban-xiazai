@@ -15,4 +15,21 @@ def parse_json_text(text: str) -> dict:
                 first_line, rest = s.split("\n", 1)
                 if first_line.strip().lower().startswith("json"):
                     s = rest.strip()
+    s = _strip_plain_json_label(s)
     return json.loads(s)
+
+
+def _strip_plain_json_label(text: str) -> str:
+    s = (text or "").lstrip()
+    if not s:
+        return s
+    if s.lower().startswith("json"):
+        remainder = s[4:].lstrip()
+        if remainder.startswith(":"):
+            remainder = remainder[1:].lstrip()
+        if remainder.startswith("{") or remainder.startswith("["):
+            return remainder
+        if "\n" in s:
+            _, rest = s.split("\n", 1)
+            return rest.strip()
+    return s
