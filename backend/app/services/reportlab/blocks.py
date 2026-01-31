@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Iterable
 
 from reportlab.lib import colors
@@ -95,12 +96,26 @@ def build_section_title(index: int, title: str, styles: dict, theme: Theme) -> l
     ]
 
 
+def sanitize_markdown_text(text: str) -> str:
+    if not text:
+        return ""
+    s = str(text).strip()
+    s = re.sub(r"^#+\s+", "", s)
+    s = re.sub(r"^\s*[-*]\s+", "", s)
+    s = re.sub(r"^\s*\d+\.\s+", "", s)
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s)
+    s = re.sub(r"__(.+?)__", r"\1", s)
+    s = re.sub(r"\*(.+?)\*", r"\1", s)
+    s = re.sub(r"`([^`]+)`", r"\1", s)
+    return s
+
+
 def build_paragraph(text: str, styles: dict) -> Paragraph:
-    return Paragraph(text, styles["body"])
+    return Paragraph(sanitize_markdown_text(text), styles["body"])
 
 
 def build_bullets(items: Iterable[str], styles: dict) -> ListFlowable:
-    bullets = [ListItem(Paragraph(item, styles["body"])) for item in items]
+    bullets = [ListItem(Paragraph(sanitize_markdown_text(item), styles["body"])) for item in items]
     return ListFlowable(bullets, bulletType="bullet", leftIndent=14)
 
 
@@ -113,7 +128,10 @@ def build_table(headers: list[str], rows: list[list[str]], styles: dict, theme: 
         if len(trimmed) < col_count:
             trimmed.extend([""] * (col_count - len(trimmed)))
         normalized_rows.append(trimmed)
-    body_rows = [[Paragraph(str(cell), styles["body"]) for cell in row] for row in normalized_rows]
+    body_rows = [
+        [Paragraph(sanitize_markdown_text(str(cell)), styles["body"]) for cell in row]
+        for row in normalized_rows
+    ]
     data = [safe_headers] + body_rows
     col_width = 160 * mm / col_count
     table = Table(data, colWidths=[col_width] * col_count)
@@ -139,7 +157,7 @@ def build_highlight_cards(items: list[HighlightCard], styles: dict, theme: Theme
     flowables: list = []
     for item in items:
         content = Paragraph(
-            f"<b>{item.title}</b>：{item.text}",
+            f"<b>{sanitize_markdown_text(item.title)}</b>：{sanitize_markdown_text(item.text)}",
             styles["highlight_body"],
         )
         card = Table([[content]], colWidths=[160 * mm])

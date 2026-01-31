@@ -5,6 +5,8 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
+import os
+
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.platypus import PageBreak, SimpleDocTemplate, Spacer
@@ -23,11 +25,16 @@ from app.services.reportlab.styles import build_styles, register_fonts
 from app.services.reportlab.theme import get_theme
 
 
+def get_pagesize() -> tuple[float, float]:
+    height_mm = float(os.getenv("PDF_LONG_PAGE_HEIGHT_MM", "4000"))
+    return (A4[0], height_mm * mm)
+
+
 def build_pdf_bytes(report: ReportData, module: str) -> bytes:
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
-        pagesize=A4,
+        pagesize=get_pagesize(),
         leftMargin=22 * mm,
         rightMargin=22 * mm,
         topMargin=18 * mm,
@@ -45,9 +52,7 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
 
     story: list = []
     story.extend(build_cover(report.cover, styles, theme))
-    story.append(PageBreak())
     story.extend(build_toc(report.sections, styles, theme))
-    story.append(PageBreak())
 
     for idx, section in enumerate(report.sections, 1):
         story.extend(build_section_title(idx, section.title, styles, theme))
