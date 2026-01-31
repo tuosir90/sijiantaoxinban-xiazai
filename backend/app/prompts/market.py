@@ -21,7 +21,18 @@ def build_market_prompt(payload: dict[str, Any]) -> str:
     store_name = _get_text(payload, "store_name", "storeName")
     enable_screenshot = bool(payload.get("enableScreenshotAnalysis"))
 
-    screenshot_hint = "会提供一张美团外卖竞品截图，请结合截图内容给出分析与建议。" if enable_screenshot else "不提供截图，仅根据文本信息分析。"
+    screenshot_hint = (
+        "会提供一张美团外卖竞品截图，请结合截图内容给出分析与建议。"
+        if enable_screenshot
+        else "不提供截图，仅根据文本信息分析。"
+    )
+    screenshot_requirements = ""
+    if enable_screenshot:
+        screenshot_requirements = (
+            "截图分析要求：必须从截图中提取店铺信息（如店名、评分、月销、起送价、配送费、"
+            "人均、距离、活动标签等），整理为单独章节，建议用表格呈现；"
+            "并基于截图信息给出对比分析与机会点/风险点。"
+        )
 
     return (
         f"{JSON_RULES}\n\n"
@@ -32,6 +43,7 @@ def build_market_prompt(payload: dict[str, Any]) -> str:
         f"- 商圈类型：{area_type or '未提供'}\n"
         f"- 拟开店/参考店铺：{store_name or '未提供'}\n"
         f"- 截图分析：{'开启' if enable_screenshot else '关闭'}（{screenshot_hint}）\n\n"
+        f"{screenshot_requirements}\n"
         "请覆盖：客群画像、消费水平、餐饮业态、竞争强度、机会点与风险点、"
         "针对外卖平台的具体动作（菜品结构、定价、活动、配送、评价与复购）。\n"
         "cover.report_title 建议为“商圈调研分析”，report_subtitle 自拟。\n"
