@@ -25,6 +25,13 @@ from app.web_ui import render_index_html  # noqa: E402
 app = FastAPI(title="外卖四件套 PDF 生成")
 
 
+@app.middleware("http")
+async def add_debug_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers.update(build_debug_headers())
+    return response
+
+
 @app.get("/")
 def index() -> HTMLResponse:
     return HTMLResponse(render_index_html())
