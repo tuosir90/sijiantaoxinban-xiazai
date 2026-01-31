@@ -7,6 +7,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, Response
@@ -41,6 +42,46 @@ def _parse_payload(payload_json: str | None) -> dict[str, Any]:
     return data
 
 
+def _get_text(payload: dict[str, Any], *keys: str) -> str:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def build_pdf_filename(module: str, payload: dict[str, Any]) -> str:
+    module_name_map = {
+        "brand": "品牌定位分析",
+        "market": "商圈调研分析",
+        "store-activity": "店铺活动方案",
+        "data-statistics": "数据统计分析",
+    }
+    store_name = _get_text(payload, "store_name", "storeName", "area_name", "areaName")
+    report_name = module_name_map.get(module, module)
+    safe_store = store_name or "未命名店铺"
+    raw_name = f"{safe_store}_{report_name}.pdf"
+    return (
+        raw_name.replace("\\", "_")
+        .replace("/", "_")
+        .replace(":", "_")
+        .replace("*", "_")
+        .replace("?", "_")
+        .replace("\"", "_")
+        .replace("<", "_")
+        .replace(">", "_")
+        .replace("|", "_")
+        .replace("\n", "")
+        .replace("\r", "")
+        .strip()
+    )
+
+
+def build_content_disposition(filename: str) -> str:
+    quoted = quote(filename)
+    return f'attachment; filename="{filename}"; filename*=UTF-8\'\'{quoted}'
+
+
 @app.post("/api/generate")
 async def generate(
     request: Request,
@@ -71,9 +112,9 @@ async def generate(
     except ReportServiceError as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
 
-    filename = f"{module}-report.pdf"
+    filename = build_pdf_filename(module, payload)
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        headers={"Content-Disposition": build_content_disposition(filename)},
     )
