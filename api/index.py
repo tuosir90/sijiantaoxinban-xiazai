@@ -82,6 +82,15 @@ def build_content_disposition(filename: str) -> str:
     return f'attachment; filename="{filename}"; filename*=UTF-8\'\'{quoted}'
 
 
+def build_debug_headers() -> dict[str, str]:
+    version = os.getenv("DEBUG_VERSION", "api-index-20260131-1")
+    diag_flag = "1" if os.getenv("DIAGNOSTIC_LOGS") == "1" else "0"
+    return {
+        "X-Debug-Version": version,
+        "X-Debug-Logs": diag_flag,
+    }
+
+
 @app.post("/api/generate")
 async def generate(
     request: Request,
@@ -113,8 +122,6 @@ async def generate(
         raise HTTPException(status_code=502, detail=str(e)) from e
 
     filename = build_pdf_filename(module, payload)
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={"Content-Disposition": build_content_disposition(filename)},
-    )
+    headers = {"Content-Disposition": build_content_disposition(filename)}
+    headers.update(build_debug_headers())
+    return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
