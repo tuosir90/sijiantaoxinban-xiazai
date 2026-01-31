@@ -246,6 +246,11 @@
       font-size: 0.9rem;
     }
 
+    .is-error {
+      border-color: #b42318 !important;
+      box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12) !important;
+    }
+
     .split {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -335,7 +340,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <button class="btn-primary" type="button" data-action="download">下载PDF</button>
         <span class="status" data-role="status"></span>
       </div>
       <div class="error" data-role="error"></div>
@@ -389,7 +394,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <button class="btn-primary" type="button" data-action="download">下载PDF</button>
         <span class="status" data-role="status"></span>
       </div>
       <div class="error" data-role="error"></div>
@@ -430,7 +435,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <button class="btn-primary" type="button" data-action="download">下载PDF</button>
         <span class="status" data-role="status"></span>
       </div>
       <div class="error" data-role="error"></div>
@@ -550,11 +555,275 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <button class="btn-primary" type="button" data-action="download">下载PDF</button>
         <span class="status" data-role="status"></span>
       </div>
       <div class="error" data-role="error"></div>
     </form>
   </div>
+
+  <script>
+    (() => {
+      const moduleNameMap = {
+        "brand": "品牌定位分析",
+        "market": "商圈调研分析",
+        "store-activity": "店铺活动方案",
+        "data-statistics": "数据统计分析"
+      };
+
+      const illegalFilenameChars = /[\\\\/:*?\"<>|]/g;
+
+      const safeText = (el, text) => {
+        if (el) el.textContent = text || "";
+      };
+
+      const sanitizeFilename = (name) => (name || "").replace(illegalFilenameChars, "_").trim();
+
+      const parseDispositionFilename = (header) => {
+        if (!header) return "";
+        const starMatch = header.match(/filename\\*=UTF-8''([^;]+)/i);
+        if (starMatch && starMatch[1]) {
+          try {
+            return decodeURIComponent(starMatch[1]);
+          } catch {
+            return starMatch[1];
+          }
+        }
+        const normalMatch = header.match(/filename=\"?([^\";]+)\"?/i);
+        return normalMatch ? normalMatch[1] : "";
+      };
+
+      const triggerDownload = (blob, filename) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      };
+
+      const collectPayload = (form, module) => {
+        const payload = {};
+        const elements = Array.from(form.querySelectorAll("[name]"));
+
+        elements.forEach((el) => {
+          const name = el.name;
+          if (!name || el.type === "file") return;
+          if (name === "targetGroup") return;
+
+          if (el.type === "checkbox") {
+            payload[name] = el.checked;
+            return;
+          }
+
+          if (el.type === "number") {
+            payload[name] = el.value === "" ? "" : Number(el.value);
+            return;
+          }
+
+          if (el.type === "range") {
+            payload[name] = el.value ? `${el.value}元` : "";
+            return;
+          }
+
+          payload[name] = (el.value || "").trim();
+        });
+
+        if (module === "brand") {
+          const targetGroups = Array.from(form.querySelectorAll('input[name="targetGroup"]:checked'))
+            .map((el) => (el.value || "").trim())
+            .filter(Boolean);
+          payload.targetGroup = targetGroups.join("、");
+        }
+
+        if (module === "data-statistics") {
+          const exposure = Number(payload.exposureCount || 0);
+          const visit = Number(payload.visitCount || 0);
+          const order = Number(payload.orderCount || 0);
+
+          if (!payload.visitConversion && exposure > 0 && visit > 0) {
+            payload.visitConversion = Number(((visit / exposure) * 100).toFixed(2));
+          }
+          if (!payload.orderConversion && visit > 0 && order > 0) {
+            payload.orderConversion = Number(((order / visit) * 100).toFixed(2));
+          }
+        }
+
+        return payload;
+      };
+
+      const validatePayload = (form, module, payload, screenshotFile) => {
+        const requiredMap = {
+          storeName: "店铺名称",
+          category: "经营品类",
+          areaName: "商圈名称",
+          location: "所在位置",
+          areaType: "商圈类型",
+          storeAddress: "店铺地址",
+          businessCategory: "经营品类",
+          businessHours: "营业时间",
+          exposureCount: "曝光人数",
+          visitCount: "入店人数",
+          orderCount: "下单人数",
+          minOrderPrice: "起送价",
+          deliveryFee: "配送费",
+          deliveryRange: "配送范围"
+        };
+
+        const markError = (name) => {
+          const el = form.querySelector(`[name="${name}"]`);
+          if (el) el.classList.add("is-error");
+        };
+
+        const valueOf = (name) => {
+          const el = form.querySelector(`[name="${name}"]`);
+          return el ? (el.value || "").trim() : "";
+        };
+
+        const missing = [];
+        const check = (name) => {
+          if (!valueOf(name)) {
+            missing.push(requiredMap[name] || name);
+            markError(name);
+          }
+        };
+
+        if (module === "brand") {
+          check("storeName");
+          check("category");
+        }
+
+        if (module === "market") {
+          check("areaName");
+          check("location");
+          check("areaType");
+          if (payload.enableScreenshotAnalysis && !screenshotFile) {
+            return "已开启截图分析，请上传竞品截图。";
+          }
+        }
+
+        if (module === "store-activity") {
+          check("storeName");
+          check("businessCategory");
+        }
+
+        if (module === "data-statistics") {
+          ["storeName", "storeAddress", "businessCategory", "businessHours"].forEach(check);
+          ["exposureCount", "visitCount", "orderCount", "minOrderPrice", "deliveryFee", "deliveryRange"].forEach(check);
+
+          const exposure = Number(payload.exposureCount || 0);
+          const visit = Number(payload.visitCount || 0);
+          const order = Number(payload.orderCount || 0);
+          if (visit > exposure) {
+            return "入店人数不能超过曝光人数。";
+          }
+          if (order > visit) {
+            return "下单人数不能超过入店人数。";
+          }
+        }
+
+        if (missing.length) {
+          return `请填写：${missing.join("、")}`;
+        }
+
+        return "";
+      };
+
+      const setupPriceRange = (form) => {
+        const priceInput = form.querySelector('input[name="priceRange"]');
+        const priceValue = form.querySelector('[data-role="priceValue"]');
+        if (!priceInput || !priceValue) return;
+        priceValue.textContent = priceInput.value;
+        priceInput.addEventListener("input", () => {
+          priceValue.textContent = priceInput.value;
+        });
+      };
+
+      const resetFieldErrors = (form) => {
+        form.querySelectorAll(".is-error").forEach((el) => el.classList.remove("is-error"));
+      };
+
+      document.querySelectorAll("form[data-module]").forEach((form) => {
+        const module = form.dataset.module;
+        const reportName = form.dataset.reportName || moduleNameMap[module] || module;
+        const button = form.querySelector('[data-action="download"]');
+        const statusEl = form.querySelector('[data-role="status"]');
+        const errorEl = form.querySelector('[data-role="error"]');
+        const enableScreenshot = form.querySelector('input[name="enableScreenshotAnalysis"]');
+        const screenshotInput = form.querySelector('input[type="file"][name="screenshot"]');
+
+        setupPriceRange(form);
+
+        form.querySelectorAll("input, textarea, select").forEach((el) => {
+          el.addEventListener("input", () => el.classList.remove("is-error"));
+          el.addEventListener("change", () => el.classList.remove("is-error"));
+        });
+
+        if (!button) return;
+        const defaultText = button.textContent;
+
+        button.addEventListener("click", async () => {
+          resetFieldErrors(form);
+          safeText(errorEl, "");
+          safeText(statusEl, "生成中，请稍候…");
+          button.disabled = true;
+          button.textContent = "生成中…";
+
+          const payload = collectPayload(form, module);
+          const screenshotFile = screenshotInput ? screenshotInput.files[0] : null;
+          if (enableScreenshot && !enableScreenshot.checked && payload.enableScreenshotAnalysis) {
+            payload.enableScreenshotAnalysis = false;
+          }
+
+          const validationError = validatePayload(form, module, payload, screenshotFile);
+          if (validationError) {
+            safeText(statusEl, "");
+            safeText(errorEl, validationError);
+            button.disabled = false;
+            button.textContent = defaultText;
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("module", module);
+          formData.append("payload_json", JSON.stringify(payload));
+          if (module === "market" && payload.enableScreenshotAnalysis && screenshotFile) {
+            formData.append("screenshot", screenshotFile);
+          }
+
+          try {
+            const response = await fetch("/api/generate", { method: "POST", body: formData });
+            if (!response.ok) {
+              let message = "";
+              try {
+                const data = await response.json();
+                message = data.detail || data.error || JSON.stringify(data);
+              } catch {
+                message = await response.text();
+              }
+              throw new Error(message || "生成失败");
+            }
+
+            const blob = await response.blob();
+            const headerFilename = parseDispositionFilename(response.headers.get("content-disposition"));
+            const storeName = sanitizeFilename(payload.storeName || payload.areaName || "未命名店铺");
+            const fallbackName = `${storeName}_${reportName}.pdf`;
+            const downloadName = sanitizeFilename(headerFilename) || fallbackName;
+
+            triggerDownload(blob, downloadName);
+            safeText(statusEl, "PDF已开始下载");
+          } catch (err) {
+            safeText(statusEl, "");
+            safeText(errorEl, `下载失败：${err && err.message ? err.message : err}`);
+          } finally {
+            button.disabled = false;
+            button.textContent = defaultText;
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
