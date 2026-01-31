@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CoverInfo(BaseModel):
@@ -21,10 +21,37 @@ class ParagraphBlock(BaseModel):
     text: str
 
 
+class BulletsBlock(BaseModel):
+    type: Literal["bullets"]
+    items: list[str]
+
+
+class TableBlock(BaseModel):
+    type: Literal["table"]
+    headers: list[str]
+    rows: list[list[str]]
+
+
+class HighlightCard(BaseModel):
+    title: str
+    text: str
+
+
+class HighlightCardsBlock(BaseModel):
+    type: Literal["highlight_cards"]
+    items: list[HighlightCard]
+
+
+Block = Annotated[
+    ParagraphBlock | BulletsBlock | TableBlock | HighlightCardsBlock,
+    Field(discriminator="type"),
+]
+
+
 class Section(BaseModel):
     title: str
     summary: str
-    blocks: list[ParagraphBlock]
+    blocks: list[Block]
 
 
 class ReportData(BaseModel):

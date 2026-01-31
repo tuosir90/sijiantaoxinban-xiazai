@@ -23,4 +23,4 @@ def test_build_pdf_bytes_basic():
     report = ReportData.model_validate(data)
     pdf_bytes = build_pdf_bytes(report, module="store-activity")
     assert pdf_bytes[:4] == b"%PDF"
-    assert len(pdf_bytes) > 1000
+    assert len(pdf_bytes) > 8000
