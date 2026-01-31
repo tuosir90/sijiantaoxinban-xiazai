@@ -208,6 +208,68 @@
       cursor: pointer;
     }
 
+    .upload-section {
+      margin-top: 16px;
+    }
+
+    .upload-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .upload-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1.5px dashed #d7c8b3;
+      background: linear-gradient(135deg, rgba(255, 248, 236, 0.95), rgba(255, 252, 246, 0.9));
+      box-shadow: 0 10px 24px rgba(32, 24, 16, 0.08);
+      cursor: pointer;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .upload-card:hover {
+      border-color: #b07a4a;
+      box-shadow: 0 14px 30px rgba(32, 24, 16, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .upload-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(155, 91, 42, 0.15);
+      display: grid;
+      place-items: center;
+      color: #8a4b1f;
+      font-size: 1.3rem;
+    }
+
+    .upload-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #3d352b;
+    }
+
+    .upload-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .upload-filename {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #8a4b1f;
+    }
+
     .range-wrap {
       display: flex;
       flex-direction: column;
@@ -396,19 +458,17 @@
         </div>
       </div>
 
-      <div class="field-grid" style="margin-top:16px;">
-        <div>
-          <label for="market-screenshot">竞品截图（可选）</label>
-          <input id="market-screenshot" name="screenshot" type="file" accept="image/*" />
-          <div class="hint">如需截图分析，请上传美团/饿了么竞品截图。</div>
-        </div>
-        <div>
-          <label>
-            <input id="market-enableScreenshot" name="enableScreenshotAnalysis" type="checkbox" checked />
-            启用截图分析
-          </label>
-          <div class="hint">开启后必须上传截图。</div>
-        </div>
+      <div class="upload-section">
+        <input id="market-screenshot" class="upload-input" name="screenshot" type="file" accept="image/*" required />
+        <label class="upload-card" for="market-screenshot">
+          <div class="upload-icon">📷</div>
+          <div>
+            <div class="upload-title">上传竞品截图（必选）</div>
+            <div class="upload-desc">建议包含店铺列表信息，支持 JPG/PNG。</div>
+            <div class="upload-filename" data-role="marketScreenshotName">未选择文件</div>
+          </div>
+        </label>
+        <div class="hint">用于提取竞品店铺信息与对比分析。</div>
       </div>
 
       <div class="actions">
@@ -758,8 +818,8 @@
           check("storeName");
           check("location");
           check("areaType");
-          if (payload.enableScreenshotAnalysis && !screenshotFile) {
-            return "已开启截图分析，请上传竞品截图。";
+          if (!screenshotFile) {
+            return "请上传竞品截图。";
           }
         }
 
@@ -810,7 +870,6 @@
         const button = form.querySelector('[data-action="download"]');
         const statusEl = form.querySelector('[data-role="status"]');
         const errorEl = form.querySelector('[data-role="error"]');
-        const enableScreenshot = form.querySelector('input[name="enableScreenshotAnalysis"]');
         const screenshotInput = form.querySelector('input[type="file"][name="screenshot"]');
 
         setupPriceRange(form);
@@ -819,6 +878,18 @@
           el.addEventListener("input", () => el.classList.remove("is-error"));
           el.addEventListener("change", () => el.classList.remove("is-error"));
         });
+
+        if (module === "market" && screenshotInput) {
+          const nameEl = form.querySelector('[data-role="marketScreenshotName"]');
+          const updateName = () => {
+            const file = screenshotInput.files && screenshotInput.files[0];
+            if (nameEl) {
+              nameEl.textContent = file ? file.name : "未选择文件";
+            }
+          };
+          screenshotInput.addEventListener("change", updateName);
+          updateName();
+        }
 
         if (!button) return;
         const defaultText = button.textContent;
@@ -832,9 +903,6 @@
 
           const payload = collectPayload(form, module);
           const screenshotFile = screenshotInput ? screenshotInput.files[0] : null;
-          if (enableScreenshot && !enableScreenshot.checked && payload.enableScreenshotAnalysis) {
-            payload.enableScreenshotAnalysis = false;
-          }
 
           const validationError = validatePayload(form, module, payload, screenshotFile);
           if (validationError) {
@@ -848,7 +916,7 @@
           const formData = new FormData();
           formData.append("module", module);
           formData.append("payload_json", JSON.stringify(payload));
-          if (module === "market" && payload.enableScreenshotAnalysis && screenshotFile) {
+          if (module === "market" && screenshotFile) {
             formData.append("screenshot", screenshotFile);
           }
 
