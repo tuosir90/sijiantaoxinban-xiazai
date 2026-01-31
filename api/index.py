@@ -99,8 +99,9 @@ def build_pdf_filename(module: str, payload: dict[str, Any]) -> str:
 
 
 def build_content_disposition(filename: str) -> str:
+    ascii_fallback = "".join(ch if ord(ch) < 128 else "_" for ch in filename).strip() or "report.pdf"
     quoted = quote(filename)
-    return f'attachment; filename="{filename}"; filename*=UTF-8\'\'{quoted}'
+    return f'attachment; filename="{ascii_fallback}"; filename*=UTF-8\'\'{quoted}'
 
 
 def build_debug_headers() -> dict[str, str]:
