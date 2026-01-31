@@ -1,6 +1,12 @@
-"""PDF 渲染服务（已弃用）。"""
+"""PDF 渲染服务（简化版）。"""
 
 from __future__ import annotations
+
+import re
+from io import BytesIO
+
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 
 class PdfRenderError(RuntimeError):
@@ -8,4 +14,22 @@ class PdfRenderError(RuntimeError):
 
 
 async def render_long_pdf(html: str) -> bytes:
-    raise PdfRenderError("当前版本已切换为ReportLab渲染，请使用reportlab模块生成PDF")
+    if not html:
+        raise PdfRenderError("HTML内容为空")
+
+    cleaned = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.S | re.I)
+    cleaned = re.sub(r"<script[^>]*>.*?</script>", "", cleaned, flags=re.S | re.I)
+    cleaned = re.sub(r"data:[^\\s)'\"]+", "", cleaned, flags=re.I)
+    text = re.sub(r"<[^>]+>", "", cleaned).strip()
+    if not text:
+        raise PdfRenderError("HTML内容解析为空")
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer)
+    styles = getSampleStyleSheet()
+    story = [
+        Paragraph(text.replace("\n", "<br/>"), styles["BodyText"]),
+        Spacer(1, 12),
+    ]
+    doc.build(story)
+    return buffer.getvalue()
