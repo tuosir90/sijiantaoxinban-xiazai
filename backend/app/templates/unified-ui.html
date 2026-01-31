@@ -460,11 +460,11 @@
 
       <div class="upload-section">
         <input id="market-screenshot" class="upload-input" name="screenshot" type="file" accept="image/*" required />
-        <label class="upload-card" for="market-screenshot" tabindex="0" role="button">
+        <label class="upload-card" for="market-screenshot" role="button">
           <div class="upload-icon">📷</div>
           <div>
             <div class="upload-title">上传竞品截图（必选）</div>
-            <div class="upload-desc">建议包含店铺列表信息，支持 JPG/PNG，支持 Ctrl+V 粘贴。</div>
+            <div class="upload-desc">建议包含店铺列表信息，支持 JPG/PNG。</div>
             <div class="upload-filename" data-role="marketScreenshotName">未选择文件</div>
           </div>
         </label>
@@ -881,44 +881,13 @@
 
         if (module === "market" && screenshotInput) {
           const nameEl = form.querySelector('[data-role="marketScreenshotName"]');
-          const uploadCard = form.querySelector(".upload-card");
           const updateName = () => {
             const file = screenshotInput.files && screenshotInput.files[0];
             if (nameEl) {
               nameEl.textContent = file ? file.name : "未选择文件";
             }
           };
-          const handleScreenshotPaste = (event) => {
-            const clipboard = event.clipboardData || window.clipboardData;
-            if (!clipboard || !clipboard.items) {
-              return;
-            }
-            const items = Array.from(clipboard.items);
-            const imageItem = items.find((item) => item.type && item.type.startsWith("image/"));
-            if (!imageItem) {
-              return;
-            }
-            const file = imageItem.getAsFile();
-            if (!file) {
-              return;
-            }
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            screenshotInput.files = dt.files;
-            updateName();
-            safeText(errorEl, "");
-            safeText(statusEl, "已粘贴截图");
-            event.preventDefault();
-          };
           screenshotInput.addEventListener("change", updateName);
-          if (uploadCard) {
-            uploadCard.addEventListener("paste", handleScreenshotPaste);
-            uploadCard.addEventListener("keydown", (event) => {
-              if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "v") {
-                safeText(statusEl, "请直接粘贴截图");
-              }
-            });
-          }
           updateName();
         }
 
