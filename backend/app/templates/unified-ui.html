@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>外卖店铺四件套 - 一页四表单</title>
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --ink: #2d2a24;
+      --muted: #6d655a;
+      --card-bg: #fffdf8;
+      --border: #e6dccb;
+      --shadow: 0 18px 40px rgba(32, 24, 16, 0.12);
+      --radius: 18px;
+      --space: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      background-image:
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.7) 0, rgba(255, 255, 255, 0) 45%),
+        radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0) 50%),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 20px 80px;
+    }
+
+    header {
+      padding: 28px 32px;
+      border-radius: 22px;
+      background: linear-gradient(120deg, #ede2d0 0%, #f7efe2 55%, #efe4d4 100%);
+      border: 1px solid #e6d8c5;
+      box-shadow: 0 12px 26px rgba(32, 24, 16, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(155, 91, 42, 0.18), rgba(155, 91, 42, 0));
+    }
+
+    .title {
+      font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      font-size: 2.2rem;
+      margin: 0 0 8px;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .module-card {
+      margin-top: 28px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px 26px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 8px;
+      background: var(--accent, #9b5b2a);
+    }
+
+    .module-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed #e4d6c4;
+    }
+
+    .module-title {
+      font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+      font-size: 1.55rem;
+      margin: 0;
+    }
+
+    .module-tag {
+      padding: 6px 14px;
+      border-radius: 999px;
+      color: white;
+      font-size: 0.85rem;
+      background: var(--accent, #9b5b2a);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .module-desc {
+      margin: 12px 0 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 22px;
+    }
+
+    .field-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    label {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+      color: #4a433a;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #d8cbb8;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fffaf2;
+      font-size: 0.95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent, #9b5b2a);
+      box-shadow: 0 0 0 3px rgba(155, 91, 42, 0.15);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #4a433a;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff6ea;
+      border: 1px solid #ead7c4;
+      border-radius: 999px;
+      padding: 6px 12px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .range-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent, #9b5b2a);
+    }
+
+    .hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent, #9b5b2a);
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.16);
+    }
+
+    .status {
+      font-size: 0.9rem;
+      color: #2f5f3f;
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #b42318;
+      font-size: 0.9rem;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .field-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .checkbox-group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .module-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .checkbox-group {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-primary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1 class="title">外卖店铺四件套一页生成台</h1>
+      <p class="subtitle">一页填写四份方案，点击按钮直接下载 PDF，省去预览步骤。</p>
+    </header>
+
+    <form class="module-card" data-module="brand" data-report-name="品牌定位分析" style="--accent:#9B5B2A;">
+      <div class="module-head">
+        <h2 class="module-title">品牌定位分析</h2>
+        <span class="module-tag">品牌主线</span>
+      </div>
+      <p class="module-desc">用于定位结论、差异化卖点与菜单结构建议。</p>
+
+      <div class="field-grid">
+        <div>
+          <label for="brand-storeName">店铺名称 *</label>
+          <input id="brand-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" required />
+        </div>
+        <div>
+          <label for="brand-category">经营品类 *</label>
+          <input id="brand-category" name="category" type="text" placeholder="如：牛羊肉、烧烤、快餐" required />
+        </div>
+        <div class="field-grid full">
+          <label for="brand-address">店铺地址</label>
+          <input id="brand-address" name="address" type="text" placeholder="如：XX市XX区XX路" />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label>目标客群</label>
+          <div class="checkbox-group" data-group="targetGroup">
+            <label><input type="checkbox" name="targetGroup" value="白领上班族" />白领上班族</label>
+            <label><input type="checkbox" name="targetGroup" value="学生群体" />学生群体</label>
+            <label><input type="checkbox" name="targetGroup" value="健身爱好者" />健身爱好者</label>
+            <label><input type="checkbox" name="targetGroup" value="年轻消费者" />年轻消费者</label>
+            <label><input type="checkbox" name="targetGroup" value="家庭用户" />家庭用户</label>
+            <label><input type="checkbox" name="targetGroup" value="夜宵用户" />夜宵用户</label>
+          </div>
+        </div>
+        <div>
+          <label for="brand-priceRange">价格区间（人均）</label>
+          <div class="range-wrap">
+            <input id="brand-priceRange" name="priceRange" type="range" min="10" max="120" step="5" value="35" />
+            <div class="hint">当前：<span data-role="priceValue">35</span> 元</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-grid full" style="margin-top:16px;">
+        <label for="brand-mainProducts">主营产品</label>
+        <input id="brand-mainProducts" name="mainProducts" type="text" placeholder="如：手切牛肉面、麻辣香锅、招牌烤串" />
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <span class="status" data-role="status"></span>
+      </div>
+      <div class="error" data-role="error"></div>
+    </form>
+
+    <form class="module-card" data-module="market" data-report-name="商圈调研分析" style="--accent:#2F6FBD;">
+      <div class="module-head">
+        <h2 class="module-title">商圈调研分析</h2>
+        <span class="module-tag">商圈洞察</span>
+      </div>
+      <p class="module-desc">关注客群、消费力与竞争强度，支持截图辅助分析。</p>
+
+      <div class="field-grid">
+        <div>
+          <label for="market-areaName">商圈名称 *</label>
+          <input id="market-areaName" name="areaName" type="text" placeholder="如：XX商圈" required />
+        </div>
+        <div>
+          <label for="market-location">所在位置 *</label>
+          <input id="market-location" name="location" type="text" placeholder="如：XX地铁口/写字楼群" required />
+        </div>
+        <div>
+          <label for="market-areaType">商圈类型 *</label>
+          <select id="market-areaType" name="areaType" required>
+            <option value="写字楼商圈">写字楼商圈</option>
+            <option value="社区商圈">社区商圈</option>
+            <option value="高校商圈">高校商圈</option>
+            <option value="综合商业区">综合商业区</option>
+            <option value="交通枢纽">交通枢纽</option>
+          </select>
+        </div>
+        <div>
+          <label for="market-storeName">拟开店/参考店铺</label>
+          <input id="market-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label for="market-screenshot">竞品截图（可选）</label>
+          <input id="market-screenshot" name="screenshot" type="file" accept="image/*" />
+          <div class="hint">如需截图分析，请上传美团/饿了么竞品截图。</div>
+        </div>
+        <div>
+          <label>
+            <input id="market-enableScreenshot" name="enableScreenshotAnalysis" type="checkbox" checked />
+            启用截图分析
+          </label>
+          <div class="hint">开启后必须上传截图。</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <span class="status" data-role="status"></span>
+      </div>
+      <div class="error" data-role="error"></div>
+    </form>
+
+    <form class="module-card" data-module="store-activity" data-report-name="店铺活动方案" style="--accent:#E07A2F;">
+      <div class="module-head">
+        <h2 class="module-title">店铺活动方案</h2>
+        <span class="module-tag">活动策划</span>
+      </div>
+      <p class="module-desc">围绕满减、返券与套餐搭配给出可落地方案。</p>
+
+      <div class="field-grid">
+        <div>
+          <label for="activity-storeName">店铺名称 *</label>
+          <input id="activity-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" required />
+        </div>
+        <div>
+          <label for="activity-storeAddress">店铺地址</label>
+          <input id="activity-storeAddress" name="storeAddress" type="text" placeholder="如：XX市XX区XX路" />
+        </div>
+        <div>
+          <label for="activity-businessCategory">经营品类 *</label>
+          <input id="activity-businessCategory" name="businessCategory" type="text" placeholder="如：牛羊肉、烧烤" required />
+        </div>
+        <div>
+          <label for="activity-businessHours">营业时间</label>
+          <input id="activity-businessHours" name="businessHours" type="text" placeholder="如：10:00-22:00" />
+        </div>
+      </div>
+
+      <div class="field-grid full" style="margin-top:16px;">
+        <label for="activity-menuItems">菜品列表（每行一个菜品）</label>
+        <textarea id="activity-menuItems" name="menuItems" placeholder="如：
+招牌牛肉面 26
+羊肉串 8
+秘制卤味拼盘 28"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <span class="status" data-role="status"></span>
+      </div>
+      <div class="error" data-role="error"></div>
+    </form>
+
+    <form class="module-card" data-module="data-statistics" data-report-name="数据统计分析" style="--accent:#6B5FB5;">
+      <div class="module-head">
+        <h2 class="module-title">数据统计分析</h2>
+        <span class="module-tag">运营诊断</span>
+      </div>
+      <p class="module-desc">填写 30 天核心数据，自动给出漏斗与配送优化建议。</p>
+
+      <div class="field-grid">
+        <div>
+          <label for="stats-storeName">店铺名称 *</label>
+          <input id="stats-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" required />
+        </div>
+        <div>
+          <label for="stats-storeAddress">店铺地址 *</label>
+          <input id="stats-storeAddress" name="storeAddress" type="text" placeholder="如：XX市XX区XX路" required />
+        </div>
+        <div>
+          <label for="stats-businessCategory">经营品类 *</label>
+          <input id="stats-businessCategory" name="businessCategory" type="text" placeholder="如：牛羊肉、快餐" required />
+        </div>
+        <div>
+          <label for="stats-businessHours">营业时间 *</label>
+          <input id="stats-businessHours" name="businessHours" type="text" placeholder="如：10:00-22:00" required />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label for="stats-exposureCount">曝光人数 *</label>
+          <input id="stats-exposureCount" name="exposureCount" type="number" min="0" placeholder="如：38000" required />
+        </div>
+        <div>
+          <label for="stats-visitCount">入店人数 *</label>
+          <input id="stats-visitCount" name="visitCount" type="number" min="0" placeholder="如：4200" required />
+        </div>
+        <div>
+          <label for="stats-orderCount">下单人数 *</label>
+          <input id="stats-orderCount" name="orderCount" type="number" min="0" placeholder="如：1260" required />
+        </div>
+        <div>
+          <label for="stats-visitConversion">入店转化率（%）</label>
+          <input id="stats-visitConversion" name="visitConversion" type="number" min="0" step="0.01" placeholder="如：11.05" />
+        </div>
+        <div>
+          <label for="stats-orderConversion">下单转化率（%）</label>
+          <input id="stats-orderConversion" name="orderConversion" type="number" min="0" step="0.01" placeholder="如：29.6" />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label for="stats-minOrderPrice">起送价 *</label>
+          <input id="stats-minOrderPrice" name="minOrderPrice" type="number" min="0" placeholder="如：25" required />
+        </div>
+        <div>
+          <label for="stats-deliveryFee">配送费 *</label>
+          <input id="stats-deliveryFee" name="deliveryFee" type="number" min="0" placeholder="如：3" required />
+        </div>
+        <div>
+          <label for="stats-deliveryRange">配送范围（公里）*</label>
+          <input id="stats-deliveryRange" name="deliveryRange" type="number" min="0" step="0.1" placeholder="如：3" required />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label for="stats-idleCookingTime">闲时出餐时长（分钟）</label>
+          <input id="stats-idleCookingTime" name="idleCookingTime" type="number" min="0" placeholder="如：15" />
+        </div>
+        <div>
+          <label for="stats-busyCookingTime">忙时出餐时长（分钟）</label>
+          <input id="stats-busyCookingTime" name="busyCookingTime" type="number" min="0" placeholder="如：20" />
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:16px;">
+        <div>
+          <label for="stats-greenCharity">青山公益</label>
+          <select id="stats-greenCharity" name="greenCharity">
+            <option value="是" selected>是</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+        <div>
+          <label for="stats-selfPickup">到店自取</label>
+          <select id="stats-selfPickup" name="selfPickup">
+            <option value="是" selected>是</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+        <div>
+          <label for="stats-preOrder">接受预订单</label>
+          <select id="stats-preOrder" name="preOrder">
+            <option value="是" selected>是</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+        <div>
+          <label for="stats-onTimeGuarantee">准时宝</label>
+          <select id="stats-onTimeGuarantee" name="onTimeGuarantee">
+            <option value="是" selected>是</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+        <div>
+          <label for="stats-foodSafety">放心吃</label>
+          <select id="stats-foodSafety" name="foodSafety">
+            <option value="是" selected>是</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" type="button" data-action="download">准备下载</button>
+        <span class="status" data-role="status"></span>
+      </div>
+      <div class="error" data-role="error"></div>
+    </form>
+  </div>
+</body>
+</html>
