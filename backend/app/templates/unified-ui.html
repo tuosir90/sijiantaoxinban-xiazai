@@ -359,10 +359,6 @@
           <input id="market-storeName" name="storeName" type="text" placeholder="如：吴家牛羊肉馆" required />
         </div>
         <div>
-          <label for="market-areaName">商圈名称 *</label>
-          <input id="market-areaName" name="areaName" type="text" placeholder="如：XX商圈" required />
-        </div>
-        <div>
           <label for="market-location">所在位置 *</label>
           <input id="market-location" name="location" type="text" placeholder="如：XX地铁口/写字楼群" required />
         </div>
@@ -668,7 +664,6 @@
         const requiredMap = {
           storeName: "店铺名称",
           category: "经营品类",
-          areaName: "商圈名称",
           location: "所在位置",
           areaType: "商圈类型",
           storeAddress: "店铺地址",
@@ -707,7 +702,6 @@
 
         if (module === "market") {
           check("storeName");
-          check("areaName");
           check("location");
           check("areaType");
           if (payload.enableScreenshotAnalysis && !screenshotFile) {

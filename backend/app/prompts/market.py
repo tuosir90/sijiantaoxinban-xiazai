@@ -15,7 +15,6 @@ def _get_text(payload: dict[str, Any], *keys: str) -> str:
 
 
 def build_market_prompt(payload: dict[str, Any]) -> str:
-    area_name = _get_text(payload, "area_name", "areaName")
     location = _get_text(payload, "location", "areaLocation")
     area_type = _get_text(payload, "area_type", "areaType")
     store_name = _get_text(payload, "store_name", "storeName")
@@ -38,7 +37,6 @@ def build_market_prompt(payload: dict[str, Any]) -> str:
         f"{JSON_RULES}\n\n"
         "请输出一份商圈调研分析报告（面向外卖经营/选址/投放决策）。\n"
         "请严格按 JSON 字段填写，包含封面信息与章节结构。\n"
-        f"- 商圈名称：{area_name or '未提供'}\n"
         f"- 所在位置：{location or '未提供'}\n"
         f"- 商圈类型：{area_type or '未提供'}\n"
         f"- 运营店铺名称：{store_name or '未提供'}\n"

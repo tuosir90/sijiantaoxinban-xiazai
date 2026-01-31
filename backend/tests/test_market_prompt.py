@@ -29,10 +29,10 @@ def test_market_prompt_omits_screenshot_extraction_when_disabled():
 
 def test_market_prompt_uses_store_name_label():
     payload = {
-        "areaName": "测试商圈",
         "location": "测试位置",
         "areaType": "写字楼商圈",
         "storeName": "运营店铺A",
     }
     prompt = build_market_prompt(payload)
     assert "运营店铺名称" in prompt
+    assert "商圈名称" not in prompt
