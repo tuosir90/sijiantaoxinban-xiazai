@@ -18,6 +18,7 @@ from app.services.reportlab.blocks import (
     build_highlight_cards,
     build_paragraph,
     build_section_title,
+    build_subtitle,
     build_table,
     build_toc,
 )
@@ -59,6 +60,8 @@ def build_pdf_bytes(report: ReportData, module: str) -> bytes:
         for block in section.blocks:
             if block.type == "paragraph":
                 story.append(build_paragraph(block.text, styles))
+            elif block.type == "subtitle":
+                story.extend(build_subtitle(block.text, styles))
             elif block.type == "bullets":
                 story.append(build_bullets(block.items, styles))
             elif block.type == "table":

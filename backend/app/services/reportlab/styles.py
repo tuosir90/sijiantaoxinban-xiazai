@@ -123,6 +123,15 @@ def build_styles(font_name: str, bold_name: str) -> dict[str, ParagraphStyle]:
         leading=24,
         alignment=TA_LEFT,
     )
+    styles["subsection_title"] = ParagraphStyle(
+        "subsection_title",
+        parent=styles["body"],
+        fontName=bold_name,
+        fontSize=12,
+        leading=18,
+        alignment=TA_LEFT,
+        textColor=colors.HexColor("#333333"),
+    )
     styles["toc_title"] = ParagraphStyle(
         "toc_title",
         parent=styles["body"],

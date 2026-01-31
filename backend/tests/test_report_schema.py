@@ -21,3 +21,28 @@ def test_report_schema_validates_minimal():
     }
     report = ReportData.model_validate(data)
     assert report.cover.store_name == "示例店"
+
+
+def test_report_schema_accepts_subtitle_block():
+    data = {
+        "cover": {
+            "store_name": "示例店",
+            "report_title": "品牌定位分析",
+            "report_subtitle": "副标题",
+            "business_line": "主营：快餐简餐",
+            "period_text": "2026年01月",
+            "plan_date": "2026-01-31",
+        },
+        "sections": [
+            {
+                "title": "策略建议",
+                "summary": "转化与复购",
+                "blocks": [
+                    {"type": "subtitle", "text": "1. 转化策略"},
+                    {"type": "paragraph", "text": "提升转化率的做法。"},
+                ],
+            }
+        ],
+    }
+    report = ReportData.model_validate(data)
+    assert report.sections[0].blocks[0].type == "subtitle"

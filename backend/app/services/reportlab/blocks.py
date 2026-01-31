@@ -96,6 +96,13 @@ def build_section_title(index: int, title: str, styles: dict, theme: Theme) -> l
     ]
 
 
+def build_subtitle(text: str, styles: dict) -> list:
+    return [
+        Paragraph(sanitize_markdown_text(text), styles["subsection_title"]),
+        Spacer(1, 2 * mm),
+    ]
+
+
 def sanitize_markdown_text(text: str) -> str:
     if not text:
         return ""

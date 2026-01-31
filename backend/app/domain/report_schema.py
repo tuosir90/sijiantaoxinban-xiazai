@@ -21,6 +21,11 @@ class ParagraphBlock(BaseModel):
     text: str
 
 
+class SubtitleBlock(BaseModel):
+    type: Literal["subtitle"]
+    text: str
+
+
 class BulletsBlock(BaseModel):
     type: Literal["bullets"]
     items: list[str]
@@ -43,7 +48,7 @@ class HighlightCardsBlock(BaseModel):
 
 
 Block = Annotated[
-    ParagraphBlock | BulletsBlock | TableBlock | HighlightCardsBlock,
+    ParagraphBlock | SubtitleBlock | BulletsBlock | TableBlock | HighlightCardsBlock,
     Field(discriminator="type"),
 ]
 

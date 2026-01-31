@@ -18,7 +18,8 @@ sections 为数组，每项包含：
 
 blocks 支持类型：
 1) {"type": "paragraph", "text": "..."}
-2) {"type": "bullets", "items": ["..."] }
-3) {"type": "table", "headers": ["..."], "rows": [["..."]] }
-4) {"type": "highlight_cards", "items": [{"title": "...", "text": "..."}] }
+2) {"type": "subtitle", "text": "..."}
+3) {"type": "bullets", "items": ["..."] }
+4) {"type": "table", "headers": ["..."], "rows": [["..."]] }
+5) {"type": "highlight_cards", "items": [{"title": "...", "text": "..."}] }
 """.strip()

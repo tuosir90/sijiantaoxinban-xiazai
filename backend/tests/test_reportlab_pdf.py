@@ -24,3 +24,30 @@ def test_build_pdf_bytes_basic():
     pdf_bytes = build_pdf_bytes(report, module="store-activity")
     assert pdf_bytes[:4] == b"%PDF"
     assert len(pdf_bytes) > 8000
+
+
+def test_build_pdf_bytes_with_subtitle_block():
+    data = {
+        "cover": {
+            "store_name": "示例店",
+            "report_title": "品牌定位分析",
+            "report_subtitle": "副标题",
+            "business_line": "主营：快餐简餐",
+            "period_text": "2026年01月",
+            "plan_date": "2026-01-31",
+        },
+        "sections": [
+            {
+                "title": "策略建议",
+                "summary": "转化与复购",
+                "blocks": [
+                    {"type": "subtitle", "text": "1. 转化策略"},
+                    {"type": "paragraph", "text": "提升转化率的做法。"},
+                ],
+            }
+        ],
+    }
+    report = ReportData.model_validate(data)
+    pdf_bytes = build_pdf_bytes(report, module="brand")
+    assert pdf_bytes[:4] == b"%PDF"
+    assert len(pdf_bytes) > 8000
