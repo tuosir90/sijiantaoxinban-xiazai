@@ -504,11 +504,13 @@
       <div class="field-grid" style="margin-top:16px;">
         <div>
           <label for="stats-idleCookingTime">闲时出餐时长（分钟）</label>
-          <input id="stats-idleCookingTime" name="idleCookingTime" type="number" min="0" placeholder="如：15" />
+          <input id="stats-idleCookingTime" name="idleCookingTime" type="number" min="0" value="15" readonly />
+          <div class="hint">默认 15 分钟，无需填写。</div>
         </div>
         <div>
           <label for="stats-busyCookingTime">忙时出餐时长（分钟）</label>
-          <input id="stats-busyCookingTime" name="busyCookingTime" type="number" min="0" placeholder="如：20" />
+          <input id="stats-busyCookingTime" name="busyCookingTime" type="number" min="0" value="20" readonly />
+          <div class="hint">默认 20 分钟，无需填写。</div>
         </div>
       </div>
 
