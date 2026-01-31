@@ -579,6 +579,16 @@
 
       const sanitizeFilename = (name) => (name || "").replace(illegalFilenameChars, "_").trim();
 
+      function parseErrorMessage(rawText) {
+        if (!rawText) return "";
+        try {
+          const data = JSON.parse(rawText);
+          return data.detail || data.error || rawText;
+        } catch {
+          return rawText;
+        }
+      }
+
       const parseDispositionFilename = (header) => {
         if (!header) return "";
         const starMatch = header.match(/filename\\*=UTF-8''([^;]+)/i);
@@ -796,13 +806,8 @@
           try {
             const response = await fetch("/api/generate", { method: "POST", body: formData });
             if (!response.ok) {
-              let message = "";
-              try {
-                const data = await response.json();
-                message = data.detail || data.error || JSON.stringify(data);
-              } catch {
-                message = await response.text();
-              }
+              const rawText = await response.text();
+              const message = parseErrorMessage(rawText);
               throw new Error(message || "生成失败");
             }
 
