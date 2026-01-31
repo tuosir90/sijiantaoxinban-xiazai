@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import SimpleDocTemplate, Spacer
+from reportlab.platypus.flowables import KeepTogether, _listWrapOn
 
 from app.domain.report_schema import ReportData
 from app.services.reportlab.blocks import (
@@ -49,12 +50,16 @@ def _parse_height_mm() -> float | None:
 
 def _estimate_story_height(story: list, frame_width: float) -> float:
     canvas = Canvas(BytesIO(), pagesize=A4)
-    total = 0.0
-    available_height = 1_000_000
-    for flowable in story:
-        _, height = flowable.wrapOn(canvas, frame_width, available_height)
-        total += height
-    return total
+    flat: list = []
+    stack = list(story)
+    while stack:
+        item = stack.pop(0)
+        if isinstance(item, KeepTogether):
+            stack[0:0] = list(getattr(item, "_content", []))
+            continue
+        flat.append(item)
+    _, height = _listWrapOn(flat, frame_width, canvas)
+    return height
 
 
 def get_pagesize(story: list | None = None) -> tuple[float, float]:
