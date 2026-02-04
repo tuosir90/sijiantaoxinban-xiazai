@@ -270,6 +270,36 @@
       color: #8a4b1f;
     }
 
+    .upload-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #cdb7a1;
+      background: #fff7ec;
+      color: #6a3f1f;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: #b07a4a;
+      box-shadow: 0 8px 18px rgba(32, 24, 16, 0.12);
+      transform: translateY(-1px);
+    }
+
     .range-wrap {
       display: flex;
       flex-direction: column;
@@ -469,6 +499,12 @@
           </div>
         </label>
         <div class="hint">用于提取竞品店铺信息与对比分析。</div>
+        <div class="upload-tools">
+          <a class="btn-secondary" href="/ui/image-merger.html" target="_blank" rel="noopener">
+            打开图片拼接工具
+          </a>
+          <span class="hint">多张截图请先拼接成一张再上传。</span>
+        </div>
       </div>
 
       <div class="actions">
