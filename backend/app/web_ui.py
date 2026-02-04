@@ -6,3 +6,8 @@ from pathlib import Path
 def render_index_html() -> str:
     template = Path(__file__).resolve().parent / "templates" / "unified-ui.html"
     return template.read_text(encoding="utf-8")
+
+
+def render_image_merger_html() -> str:
+    template = Path(__file__).resolve().parent / "templates" / "image-merger.html"
+    return template.read_text(encoding="utf-8")

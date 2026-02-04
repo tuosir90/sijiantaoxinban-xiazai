@@ -20,7 +20,7 @@ os.environ.setdefault("FONT_DIR", str(PROJECT_ROOT / "backend" / "assets" / "fon
 
 from app.services.image_processor import process_image_to_data_url  # noqa: E402
 from app.services.report_service import ReportServiceError, generate_pdf_bytes  # noqa: E402
-from app.web_ui import render_index_html  # noqa: E402
+from app.web_ui import render_image_merger_html, render_index_html  # noqa: E402
 
 app = FastAPI(title="外卖四件套 PDF 生成")
 
@@ -43,12 +43,26 @@ async def add_debug_headers(request: Request, call_next):
 
 @app.exception_handler(Exception)
 async def handle_unexpected_error(request: Request, exc: Exception):
-    return JSONResponse(status_code=500, content=_build_error_payload(exc), headers=build_debug_headers())
+    return JSONResponse(
+        status_code=500,
+        content=_build_error_payload(exc),
+        headers=build_debug_headers(),
+    )
 
 
 @app.get("/")
 def index() -> HTMLResponse:
     return HTMLResponse(render_index_html())
+
+
+@app.get("/ui/image-merger.html")
+def image_merger() -> HTMLResponse:
+    return HTMLResponse(render_image_merger_html())
+
+
+@app.get("/image-merger.html")
+def image_merger_alias() -> HTMLResponse:
+    return HTMLResponse(render_image_merger_html())
 
 
 def _parse_payload(payload_json: str | None) -> dict[str, Any]:
@@ -88,7 +102,7 @@ def build_pdf_filename(module: str, payload: dict[str, Any]) -> str:
         .replace(":", "_")
         .replace("*", "_")
         .replace("?", "_")
-        .replace("\"", "_")
+        .replace('"', "_")
         .replace("<", "_")
         .replace(">", "_")
         .replace("|", "_")
@@ -99,9 +113,11 @@ def build_pdf_filename(module: str, payload: dict[str, Any]) -> str:
 
 
 def build_content_disposition(filename: str) -> str:
-    ascii_fallback = "".join(ch if ord(ch) < 128 else "_" for ch in filename).strip() or "report.pdf"
+    ascii_fallback = (
+        "".join(ch if ord(ch) < 128 else "_" for ch in filename).strip() or "report.pdf"
+    )
     quoted = quote(filename)
-    return f'attachment; filename="{ascii_fallback}"; filename*=UTF-8\'\'{quoted}'
+    return f"attachment; filename=\"{ascii_fallback}\"; filename*=UTF-8''{quoted}"
 
 
 def build_debug_headers() -> dict[str, str]:
@@ -139,7 +155,9 @@ async def generate(
         payload["enableScreenshotAnalysis"] = True
 
     try:
-        pdf_bytes = await generate_pdf_bytes(module=module, payload=payload, screenshot_data_url=screenshot_data_url)
+        pdf_bytes = await generate_pdf_bytes(
+            module=module, payload=payload, screenshot_data_url=screenshot_data_url
+        )
     except ReportServiceError as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
 
