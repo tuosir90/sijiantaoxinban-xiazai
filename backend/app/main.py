@@ -20,14 +20,20 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title="外卖店铺四件套 FastAPI 后端")
     app.state.settings = settings
-    app.state.report_store = InMemoryReportStore(ttl_seconds=settings.report_ttl_seconds)
+    app.state.report_store = InMemoryReportStore(
+        ttl_seconds=settings.report_ttl_seconds
+    )
 
     base_dir = Path(__file__).resolve().parents[1]
     templates_dir = Path(__file__).resolve().parent / "templates"
     fonts_dir = base_dir / "assets" / "fonts"
-    app.state.template_renderer = ReportTemplateRenderer(templates_dir=templates_dir, fonts_dir=fonts_dir)
+    app.state.template_renderer = ReportTemplateRenderer(
+        templates_dir=templates_dir, fonts_dir=fonts_dir
+    )
 
-    allow_origins = [o.strip() for o in (settings.cors_allow_origins or "*").split(",") if o.strip()] or ["*"]
+    allow_origins = [
+        o.strip() for o in (settings.cors_allow_origins or "*").split(",") if o.strip()
+    ] or ["*"]
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allow_origins,
@@ -41,12 +47,12 @@ def create_app() -> FastAPI:
     app.include_router(reports_router)
     app.include_router(screenshot_router)
 
-    frontend_dir = base_dir.parent / "frontend"
-    if frontend_dir.exists():
-        app.mount("/ui", StaticFiles(directory=str(frontend_dir), html=True), name="ui")
+    ui_dir = base_dir / "templates"
+    if ui_dir.exists():
+        app.mount("/ui", StaticFiles(directory=str(ui_dir), html=True), name="ui")
 
         @app.get("/")
         def _root_redirect():
-            return RedirectResponse(url="/ui/index.html")
+            return RedirectResponse(url="/ui/unified-ui.html")
 
     return app
