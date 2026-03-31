@@ -3,10 +3,5 @@
   "buildCommand": "pnpm build",
   "rewrites": [
     { "source": "/api/generate", "destination": "/api/index.py" }
-  ],
-  "functions": {
-    "api/index.py": {
-      "runtime": "@vercel/python@3.12"
-    }
-  }
+  ]
 }
