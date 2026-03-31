@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 9% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 9% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 9% 12%;
+
+    --primary: 24 75% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 20% 96%;
+    --secondary-foreground: 220 9% 12%;
+
+    --muted: 30 20% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 30 30% 94%;
+    --accent-foreground: 220 9% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 24 75% 42%;
+
+    --radius: 0.75rem;
+
+    /* Module-specific colors */
+    --brand: 24 75% 42%;
+    --market: 211 70% 47%;
+    --activity: 24 80% 53%;
+    --statistics: 250 45% 55%;
+  }
+
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 30 10% 95%;
+
+    --card: 220 15% 11%;
+    --card-foreground: 30 10% 95%;
+
+    --popover: 220 15% 11%;
+    --popover-foreground: 30 10% 95%;
+
+    --primary: 24 75% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 12% 16%;
+    --secondary-foreground: 30 10% 95%;
+
+    --muted: 220 12% 16%;
+    --muted-foreground: 220 9% 55%;
+
+    --accent: 220 12% 18%;
+    --accent-foreground: 30 10% 95%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 12% 18%;
+    --input: 220 12% 18%;
+    --ring: 24 75% 50%;
+
+    /* Module-specific colors (dark mode) */
+    --brand: 24 75% 50%;
+    --market: 211 70% 55%;
+    --activity: 24 80% 60%;
+    --statistics: 250 45% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-brand {
+    background: linear-gradient(135deg, hsl(var(--brand)) 0%, hsl(24 65% 32%) 100%);
+  }
+
+  .gradient-market {
+    background: linear-gradient(135deg, hsl(var(--market)) 0%, hsl(211 60% 37%) 100%);
+  }
+
+  .gradient-activity {
+    background: linear-gradient(135deg, hsl(var(--activity)) 0%, hsl(24 70% 43%) 100%);
+  }
+
+  .gradient-statistics {
+    background: linear-gradient(135deg, hsl(var(--statistics)) 0%, hsl(250 35% 45%) 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
