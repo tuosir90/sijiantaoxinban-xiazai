@@ -20,7 +20,6 @@ os.environ.setdefault("FONT_DIR", str(PROJECT_ROOT / "backend" / "assets" / "fon
 
 from app.services.image_processor import process_image_to_data_url  # noqa: E402
 from app.services.report_service import ReportServiceError, generate_pdf_bytes  # noqa: E402
-from app.web_ui import render_image_merger_html, render_index_html  # noqa: E402
 
 app = FastAPI(title="外卖四件套 PDF 生成")
 
@@ -48,21 +47,6 @@ async def handle_unexpected_error(request: Request, exc: Exception):
         content=_build_error_payload(exc),
         headers=build_debug_headers(),
     )
-
-
-@app.get("/")
-def index() -> HTMLResponse:
-    return HTMLResponse(render_index_html())
-
-
-@app.get("/ui/image-merger.html")
-def image_merger() -> HTMLResponse:
-    return HTMLResponse(render_image_merger_html())
-
-
-@app.get("/image-merger.html")
-def image_merger_alias() -> HTMLResponse:
-    return HTMLResponse(render_image_merger_html())
 
 
 def _parse_payload(payload_json: str | None) -> dict[str, Any]:
