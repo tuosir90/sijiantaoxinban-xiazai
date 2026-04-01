@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FormField } from "@/components/form-field"
 import { Input } from "@/components/ui/input"
+import { DownloadConfirmDialog } from "@/components/download-confirm-dialog"
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import {
   ArrowLeft,
   Loader2,
 } from "lucide-react"
+import { saveBlobWithDialog } from "@/lib/download"
 import { cn } from "@/lib/utils"
 
 interface ImageItem {
@@ -49,8 +51,10 @@ export default function ImageMergerPage() {
   const [alignment, setAlignment] = useState<"center" | "left" | "right">("center")
   const [spacing, setSpacing] = useState(0)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const [hasPreview, setHasPreview] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const formatBytes = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`
@@ -181,7 +185,7 @@ export default function ImageMergerPage() {
     setHasPreview(true)
   }, [images, direction, alignment, spacing, toast])
 
-  const downloadImage = async () => {
+  const openDownloadDialog = () => {
     const canvas = canvasRef.current
     if (!canvas || !hasPreview) {
       toast({
@@ -191,26 +195,31 @@ export default function ImageMergerPage() {
       })
       return
     }
+    setDialogOpen(true)
+  }
 
+  const downloadImage = async () => {
+    const canvas = canvasRef.current
+    if (!canvas || !hasPreview) return
+
+    setIsDownloading(true)
     try {
       const blob = await new Promise<Blob | null>((resolve) => 
         canvas.toBlob(resolve, "image/png")
       )
       if (!blob) throw new Error("导出失败")
 
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = `merged_${new Date().toISOString().slice(0, 10)}.png`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
+      const filename = `merged_${new Date().toISOString().slice(0, 10)}.png`
+      const result = await saveBlobWithDialog(blob, filename, [
+        { name: "PNG图片", extensions: ["png"] },
+        { name: "所有文件", extensions: ["*"] },
+      ])
+      setDialogOpen(false)
 
       toast({
         variant: "success",
-        title: "下载成功",
-        description: "图片已开始下载",
+        title: result.canceled ? "已取消保存" : "下载成功",
+        description: result.canceled ? "你已取消本次保存" : "图片已开始下载或弹出保存窗口",
       })
     } catch (error) {
       toast({
@@ -218,6 +227,8 @@ export default function ImageMergerPage() {
         title: "下载失败",
         description: error instanceof Error ? error.message : "请重试",
       })
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -446,7 +457,7 @@ export default function ImageMergerPage() {
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={downloadImage}
+                    onClick={openDownloadDialog}
                     disabled={!hasPreview}
                     className="gap-2"
                   >
@@ -459,6 +470,7 @@ export default function ImageMergerPage() {
           </div>
         </div>
       </main>
+      <DownloadConfirmDialog open={dialogOpen} onOpenChange={setDialogOpen} title="确认下载拼接图片" description="确认后将导出当前拼接结果；在桌面端会弹出保存对话框，在浏览器中会直接开始下载。" loading={isDownloading} confirmText="立即下载" onConfirm={downloadImage} />
     </div>
   )
 }

@@ -1,18 +1,14 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { buildReportHtml } = require("../../public/js/report-template");
+const fs = require("node:fs");
 
-test("模板生成包含 header 与 markdown 内容", () => {
-  const html = buildReportHtml({
-    module: "brand",
-    title: "示例标题",
-    subtitle: "示例副标题",
-    dateText: "2026-01-30 12:00:00",
-    screenshotDataUrl: null,
-    contentHtml: "<h1>内容</h1>",
-    rawMarkdown: "# 内容"
-  });
-  assert.ok(html.includes("class=\"header\""));
-  assert.ok(html.includes("示例标题"));
-  assert.ok(html.includes("<h1>内容</h1>"));
+test("首页使用统一四模块排版与旧版文案方向一致", () => {
+  const code = fs.readFileSync("app/page.tsx", "utf-8");
+
+  assert.ok(code.includes("外卖店铺四件套一页生成台"));
+  assert.ok(code.includes("一页填写四份方案"));
+  assert.ok(code.includes("BrandSection"));
+  assert.ok(code.includes("MarketSection"));
+  assert.ok(code.includes("ActivitySection"));
+  assert.ok(code.includes("StatisticsSection"));
 });

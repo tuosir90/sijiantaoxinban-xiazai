@@ -8,7 +8,7 @@ import { Store, BarChart3, Megaphone, Target, ImageIcon, Menu, X } from "lucide-
 import { useState } from "react"
 
 const navItems = [
-  { href: "/", label: "品牌定位", icon: Target, color: "text-brand" },
+  { href: "/", label: "四件套首页", icon: Target, color: "text-brand" },
   { href: "/market", label: "商圈调研", icon: Store, color: "text-market" },
   { href: "/activity", label: "活动方案", icon: Megaphone, color: "text-activity" },
   { href: "/statistics", label: "数据统计", icon: BarChart3, color: "text-statistics" },

@@ -1,233 +1,44 @@
-"use client"
-
-import { useState } from "react"
+import { ActivitySection } from "@/components/modules/activity-section"
+import { BrandSection } from "@/components/modules/brand-section"
+import { MarketSection } from "@/components/modules/market-section"
+import { StatisticsSection } from "@/components/modules/statistics-section"
 import { Header } from "@/components/header"
-import { ModuleCard } from "@/components/module-card"
-import { FormField } from "@/components/form-field"
-import { CheckboxGroup } from "@/components/checkbox-group"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
 import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/hooks/use-toast"
-import { Target, Download, Loader2 } from "lucide-react"
 
-const TARGET_GROUPS = [
-  "白领上班族",
-  "学生群体",
-  "健身爱好者",
-  "年轻消费者",
-  "家庭用户",
-  "夜宵用户",
+const SECTIONS = [
+  { id: "brand", title: "品牌定位分析", component: BrandSection },
+  { id: "market", title: "商圈调研分析", component: MarketSection },
+  { id: "activity", title: "店铺活动方案", component: ActivitySection },
+  { id: "statistics", title: "数据统计分析", component: StatisticsSection },
 ]
 
-export default function BrandPage() {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    storeName: "",
-    category: "",
-    address: "",
-    targetGroup: [] as string[],
-    priceRange: 35,
-    mainProducts: "",
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const updateField = (field: string, value: string | number | string[]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => ({ ...prev, [field]: "" }))
-  }
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.storeName.trim()) {
-      newErrors.storeName = "请填写店铺名称"
-    }
-    if (!formData.category.trim()) {
-      newErrors.category = "请填写经营品类"
-    }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async () => {
-    if (!validate()) {
-      toast({
-        variant: "destructive",
-        title: "表单验证失败",
-        description: "请填写必填字段",
-      })
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      const payload = {
-        ...formData,
-        targetGroup: formData.targetGroup.join("、"),
-        priceRange: `${formData.priceRange}元`,
-      }
-
-      const formDataObj = new FormData()
-      formDataObj.append("module", "brand")
-      formDataObj.append("payload_json", JSON.stringify(payload))
-
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        body: formDataObj,
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        let errorMessage = "生成失败"
-        try {
-          const errorData = JSON.parse(errorText)
-          errorMessage = errorData.detail || errorData.error || errorMessage
-        } catch {
-          errorMessage = errorText || errorMessage
-        }
-        throw new Error(errorMessage)
-      }
-
-      const blob = await response.blob()
-      const fileName = `${formData.storeName || "未命名店铺"}_品牌定位分析.pdf`
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
-
-      toast({
-        variant: "success",
-        title: "生成成功",
-        description: "PDF 已开始下载",
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "生成失败",
-        description: error instanceof Error ? error.message : "请稍后重试",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.85),_transparent_38%),linear-gradient(180deg,_#f7f1e6_0%,_#f3ede2_45%,_#efe7d9_100%)]">
       <Header />
       <Toaster />
-      
-      <main className="container mx-auto max-w-4xl px-4 py-8">
-        {/* Hero Section */}
-        <div className="mb-8 text-center">
-          <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl text-balance">
-            外卖店铺四件套生成平台
-          </h1>
-          <p className="mt-3 text-muted-foreground text-pretty">
-            一站式外卖店铺策划方案，填写表单即可下载专业 PDF 报告
-          </p>
-        </div>
 
-        <ModuleCard
-          title="品牌定位分析"
-          description="用于定位结论、差异化卖点与菜单结构建议"
-          tag="品牌主线"
-          icon={Target}
-          accentColor="brand"
-          gradientClass="gradient-brand"
-        >
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="店铺名称" required error={errors.storeName}>
-                <Input
-                  placeholder="如：吴家牛羊肉馆"
-                  value={formData.storeName}
-                  onChange={(e) => updateField("storeName", e.target.value)}
-                  className={errors.storeName ? "border-destructive" : ""}
-                />
-              </FormField>
-              <FormField label="经营品类" required error={errors.category}>
-                <Input
-                  placeholder="如：牛羊肉、烧烤、快餐"
-                  value={formData.category}
-                  onChange={(e) => updateField("category", e.target.value)}
-                  className={errors.category ? "border-destructive" : ""}
-                />
-              </FormField>
-            </div>
-
-            <FormField label="店铺地址">
-              <Input
-                placeholder="如：XX市XX区XX路"
-                value={formData.address}
-                onChange={(e) => updateField("address", e.target.value)}
-              />
-            </FormField>
-
-            {/* Target Group */}
-            <FormField label="目标客群">
-              <CheckboxGroup
-                options={TARGET_GROUPS}
-                value={formData.targetGroup}
-                onChange={(value) => updateField("targetGroup", value)}
-              />
-            </FormField>
-
-            {/* Price Range */}
-            <FormField label="价格区间（人均）" hint={`当前：${formData.priceRange} 元`}>
-              <Slider
-                value={[formData.priceRange]}
-                onValueChange={(value) => updateField("priceRange", value[0])}
-                min={10}
-                max={120}
-                step={5}
-                className="mt-2"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>10 元</span>
-                <span>120 元</span>
-              </div>
-            </FormField>
-
-            {/* Main Products */}
-            <FormField label="主营产品">
-              <Input
-                placeholder="如：手切牛肉面、麻辣香锅、招牌烤串"
-                value={formData.mainProducts}
-                onChange={(e) => updateField("mainProducts", e.target.value)}
-              />
-            </FormField>
-
-            {/* Submit */}
-            <div className="flex items-center gap-4 pt-4 border-t">
-              <Button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                size="lg"
-                className="gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    生成中...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4" />
-                    下载 PDF
-                  </>
-                )}
-              </Button>
-            </div>
+      <main className="container mx-auto max-w-5xl px-4 py-8 sm:py-10">
+        <section className="relative overflow-hidden rounded-[2rem] border border-amber-200/70 bg-[linear-gradient(135deg,_rgba(241,228,208,0.96),_rgba(252,247,239,0.98))] px-6 py-8 shadow-[0_20px_50px_rgba(73,51,29,0.12)] sm:px-8">
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/80 px-4 py-1.5 text-sm font-medium tracking-[0.2em] text-amber-800">
+            <span className="h-2 w-2 rounded-full bg-amber-700" />
+            呈尚策划
           </div>
-        </ModuleCard>
+          <h1 className="mt-4 font-serif text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+            外卖店铺四件套一页生成台
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
+            一页填写四份方案，延续旧版老板 UI 的阅读顺序与业务排版。每个模块都支持单独下载，点击下载按钮会先弹出确认层，在桌面端继续弹出保存对话框。
+          </p>
+        </section>
+
+        <section className="mt-8 space-y-8">
+          {SECTIONS.map(({ id, component: Section }) => (
+            <div key={id} id={id}>
+              <Section />
+            </div>
+          ))}
+        </section>
       </main>
     </div>
   )
