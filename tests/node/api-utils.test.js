@@ -1,7 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { buildApiUrl } = require("../../public/js/api");
+const fs = require("node:fs");
 
-test("buildApiUrl 能拼接相对路径", () => {
-  assert.equal(buildApiUrl("/api/reports/generate"), "/api/reports/generate");
+test("统一页面顶部提供线路1和线路2切换，且默认选中线路1", () => {
+  const html = fs.readFileSync("backend/app/templates/unified-ui.html", "utf-8");
+  assert.ok(html.includes("线路1"));
+  assert.ok(html.includes("线路2"));
+  assert.match(html, /value="line1"[\s\S]*checked/);
 });

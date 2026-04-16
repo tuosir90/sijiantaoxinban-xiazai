@@ -20,9 +20,16 @@ os.environ.setdefault("FONT_DIR", str(PROJECT_ROOT / "backend" / "assets" / "fon
 
 from app.services.image_processor import process_image_to_data_url  # noqa: E402
 from app.services.report_service import ReportServiceError, generate_pdf_bytes  # noqa: E402
-from app.web_ui import render_image_merger_html, render_index_html  # noqa: E402
+from app.web_ui import read_ui_asset, render_image_merger_html, render_index_html  # noqa: E402
 
 app = FastAPI(title="外卖四件套 PDF 生成")
+
+UI_ASSET_MEDIA_TYPES = {
+    "unified-ui.css": "text/css",
+    "unified-ui-form.js": "application/javascript",
+    "unified-ui.js": "application/javascript",
+    "unified-ui-helpers.js": "application/javascript",
+}
 
 
 def _build_error_payload(exc: BaseException) -> dict[str, Any]:
@@ -60,6 +67,14 @@ def image_merger() -> HTMLResponse:
     return HTMLResponse(render_image_merger_html())
 
 
+@app.get("/ui/{asset_name}")
+def ui_asset(asset_name: str) -> Response:
+    media_type = UI_ASSET_MEDIA_TYPES.get(asset_name)
+    if not media_type:
+        raise HTTPException(status_code=404, detail="资源不存在")
+    return Response(content=read_ui_asset(asset_name), media_type=media_type)
+
+
 @app.get("/image-merger.html")
 def image_merger_alias() -> HTMLResponse:
     return HTMLResponse(render_image_merger_html())
@@ -83,6 +98,13 @@ def _get_text(payload: dict[str, Any], *keys: str) -> str:
         if value is not None and str(value).strip():
             return str(value).strip()
     return ""
+
+
+def _parse_line_id(line_id: str | None) -> str:
+    current = (line_id or "line1").strip() or "line1"
+    if current not in {"line1", "line2"}:
+        raise HTTPException(status_code=400, detail="line_id不合法")
+    return current
 
 
 def build_pdf_filename(module: str, payload: dict[str, Any]) -> str:
@@ -134,14 +156,17 @@ async def generate(
     request: Request,
     module: str | None = Form(None),
     payload_json: str | None = Form(None),
+    line_id: str | None = Form(None),
     screenshot: UploadFile | None = File(None),
 ):
     if request.headers.get("content-type", "").startswith("application/json"):
         body = await request.json()
         module = body.get("module")
         payload = body.get("payload") or {}
+        line_id = body.get("line_id") or body.get("lineId")
     else:
         payload = _parse_payload(payload_json)
+    line_id = _parse_line_id(line_id)
 
     if not module:
         raise HTTPException(status_code=400, detail="缺少module参数")
@@ -156,7 +181,10 @@ async def generate(
 
     try:
         pdf_bytes = await generate_pdf_bytes(
-            module=module, payload=payload, screenshot_data_url=screenshot_data_url
+            module=module,
+            payload=payload,
+            screenshot_data_url=screenshot_data_url,
+            line_id=line_id,
         )
     except ReportServiceError as e:
         raise HTTPException(status_code=502, detail=str(e)) from e

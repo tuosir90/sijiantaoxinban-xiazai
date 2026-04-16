@@ -9,7 +9,17 @@ test("统一页面包含四个模块表单", () => {
 
 test("统一页面包含下载按钮与提交脚本", () => {
   const html = fs.readFileSync("backend/app/templates/unified-ui.html", "utf-8");
+  const js = fs.readFileSync("backend/app/templates/unified-ui.js", "utf-8");
   assert.ok(html.includes("下载PDF"));
-  assert.ok(html.includes("/api/generate"));
-  assert.ok(html.includes("FormData"));
+  assert.ok(html.includes("/ui/unified-ui.css"));
+  assert.ok(html.includes("/ui/unified-ui-form.js"));
+  assert.ok(html.includes("/ui/unified-ui-helpers.js"));
+  assert.ok(html.includes("/ui/unified-ui.js"));
+  assert.ok(js.includes("/api/generate"));
+});
+
+test("统一页面不再内联大段样式和脚本", () => {
+  const html = fs.readFileSync("backend/app/templates/unified-ui.html", "utf-8");
+  assert.equal(html.includes("<style>"), false);
+  assert.equal(html.includes("const collectPayload ="), false);
 });

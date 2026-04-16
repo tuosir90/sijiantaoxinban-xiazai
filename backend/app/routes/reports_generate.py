@@ -24,20 +24,13 @@ def _looks_like_html(text: str) -> bool:
     return hits >= 3
 
 
-def _select_model(settings: Any, module: str) -> str:
-    """按模块选择模型名，未配置则回退到默认模型。"""
-    default = getattr(settings, "upstream_model_default", "") or ""
-
-    if module == "brand":
-        return (getattr(settings, "upstream_model_brand", "") or "").strip() or default
-    if module == "market":
-        return (getattr(settings, "upstream_model_market", "") or "").strip() or default
-    if module == "store-activity":
-        return (getattr(settings, "upstream_model_store_activity", "") or "").strip() or default
-    if module == "data-statistics":
-        return (getattr(settings, "upstream_model_data_statistics", "") or "").strip() or default
-
-    return default
+def _build_upstream_cfg(settings: Any, module: str, line_id: str) -> UpstreamConfig:
+    line = settings.get_upstream_line(line_id)
+    line.ensure_configured()
+    model = line.resolve_model(module)
+    if not model:
+        raise ValueError(f"{line.label}未配置默认模型")
+    return UpstreamConfig(base_url=line.base_url, api_key=line.api_key, model=model)
 
 
 @router.post("/api/reports/generate")
@@ -45,6 +38,7 @@ async def generate_report(
     request: Request,
     module: str = Form(...),
     payload_json: str = Form(...),
+    line_id: str = Form("line1"),
     screenshot: UploadFile | None = File(None),
 ):
     module = safe_module(module)
@@ -72,12 +66,10 @@ async def generate_report(
         "严格输出Markdown正文，不要输出任何问候/开场白；不要输出HTML标签；不要用```包裹全文。"
     )
 
-    model = _select_model(settings, module)
-    cfg = UpstreamConfig(
-        base_url=settings.upstream_base_url,
-        api_key=settings.upstream_api_key,
-        model=model,
-    )
+    try:
+        cfg = _build_upstream_cfg(settings, module, line_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
     async with httpx.AsyncClient() as client:
         try:

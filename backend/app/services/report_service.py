@@ -15,7 +15,7 @@ from app.prompts.registry import build_prompt
 from app.services.json_parser import parse_json_text
 from app.services.reportlab.pdf_builder import build_pdf_bytes
 from app.services.upstream_llm import UpstreamConfig, UpstreamError, chat_completions
-from app.settings import get_settings
+from app.settings import UpstreamLine, get_settings
 
 
 class ReportServiceError(RuntimeError):
@@ -100,17 +100,11 @@ def _log_diag(event: str, payload: dict[str, Any]) -> None:
     print("[诊断日志] " + " | ".join(parts))
 
 
-def _select_model(settings: Any, module: str) -> str:
-    default = (getattr(settings, "upstream_model_default", "") or "").strip()
-    if module == "brand":
-        return (getattr(settings, "upstream_model_brand", "") or "").strip() or default
-    if module == "market":
-        return (getattr(settings, "upstream_model_market", "") or "").strip() or default
-    if module == "store-activity":
-        return (getattr(settings, "upstream_model_store_activity", "") or "").strip() or default
-    if module == "data-statistics":
-        return (getattr(settings, "upstream_model_data_statistics", "") or "").strip() or default
-    return default
+def _select_model(line: UpstreamLine, module: str) -> str:
+    model = line.resolve_model(module)
+    if model:
+        return model
+    raise ReportServiceError(f"{line.label}未配置默认模型")
 
 
 async def _repair_json(client: httpx.AsyncClient, cfg: UpstreamConfig, raw: str) -> str:
@@ -134,14 +128,21 @@ async def generate_pdf_bytes(
     module: str,
     payload: dict[str, Any],
     screenshot_data_url: str | None = None,
+    line_id: str = "line1",
 ) -> bytes:
     settings = get_settings()
     try:
         prompt = build_prompt(module, payload)
     except ValueError as e:
         raise ReportServiceError(str(e)) from e
-    model = _select_model(settings, module)
-    cfg = UpstreamConfig(base_url=settings.upstream_base_url, api_key=settings.upstream_api_key, model=model)
+    try:
+        line = settings.get_upstream_line(line_id)
+        line.ensure_configured()
+    except ValueError as e:
+        raise ReportServiceError(str(e)) from e
+
+    model = _select_model(line, module)
+    cfg = UpstreamConfig(base_url=line.base_url, api_key=line.api_key, model=model)
 
     system = (
         "你是一位资深的餐饮外卖运营与市场分析专家。"
