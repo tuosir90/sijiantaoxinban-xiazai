@@ -132,6 +132,20 @@
         transform 0.2s ease;
     }
 
+    .line-option-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.1;
+    }
+
+    .line-option-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      opacity: 0.82;
+    }
+
     .line-option input {
       margin: 0;
       accent-color: #9b5b2a;
