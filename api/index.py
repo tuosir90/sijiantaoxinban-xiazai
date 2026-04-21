@@ -30,6 +30,7 @@ UI_ASSET_MEDIA_TYPES = {
     "unified-ui.js": "application/javascript",
     "unified-ui-helpers.js": "application/javascript",
 }
+VALID_LINE_IDS = {"line1", "line2", "line3"}
 
 
 def _build_error_payload(exc: BaseException) -> dict[str, Any]:
@@ -102,7 +103,7 @@ def _get_text(payload: dict[str, Any], *keys: str) -> str:
 
 def _parse_line_id(line_id: str | None) -> str:
     current = (line_id or "line1").strip() or "line1"
-    if current not in {"line1", "line2"}:
+    if current not in VALID_LINE_IDS:
         raise HTTPException(status_code=400, detail="line_id不合法")
     return current
 
