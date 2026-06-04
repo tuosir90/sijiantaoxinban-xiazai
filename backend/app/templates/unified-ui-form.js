@@ -58,10 +58,7 @@
       businessHours: "营业时间",
       exposureCount: "曝光人数",
       visitCount: "入店人数",
-      orderCount: "下单人数",
-      minOrderPrice: "起送价",
-      deliveryFee: "配送费",
-      deliveryRange: "配送范围"
+      orderCount: "下单人数"
     };
 
     const markError = (name) => {
@@ -102,7 +99,7 @@
     }
     if (module === "data-statistics") {
       ["storeName", "storeAddress", "businessCategory", "businessHours"].forEach(check);
-      ["exposureCount", "visitCount", "orderCount", "minOrderPrice", "deliveryFee", "deliveryRange"].forEach(check);
+      ["exposureCount", "visitCount", "orderCount"].forEach(check);
       const exposure = Number(payload.exposureCount || 0);
       const visit = Number(payload.visitCount || 0);
       const order = Number(payload.orderCount || 0);

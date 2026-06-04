@@ -112,10 +112,6 @@ function buildDataStatisticsPrompt(payload = {}) {
     `- 下单人数：${f(payload.orderCount)}\n` +
     `- 入店转化率：${f(payload.visitConversion)}%\n` +
     `- 下单转化率：${f(payload.orderConversion)}%\n\n` +
-    "## 配送服务设置\n" +
-    `- 起送价：${f(payload.minOrderPrice)}\n` +
-    `- 配送费：${f(payload.deliveryFee)}\n` +
-    `- 配送范围：${f(payload.deliveryRange)}\n\n` +
     "## 店铺权重与服务开通\n" +
     `- 闲时出餐时长：${f(payload.idleCookingTime)}分钟\n` +
     `- 忙时出餐时长：${f(payload.busyCookingTime)}分钟\n` +
@@ -124,7 +120,7 @@ function buildDataStatisticsPrompt(payload = {}) {
     `- 接受预订单：${f(payload.preOrder)}\n` +
     `- 准时宝：${f(payload.onTimeGuarantee)}\n` +
     `- 放心吃：${f(payload.foodSafety)}\n\n` +
-    "请分析：漏斗问题定位、配送竞争力、店铺权重设置影响、" +
+    "请分析：漏斗问题定位、店铺权重设置影响、服务开通情况、" +
     "以及最重要的3-5条可执行优化动作（按优先级排序）。\n"
   );
 }

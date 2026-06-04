@@ -18,3 +18,11 @@ def test_stats_idle_busy_defaults_are_fixed():
     assert "readonly" in idle_input
     assert 'value="20"' in busy_input
     assert "readonly" in busy_input
+
+
+def test_stats_form_does_not_render_delivery_service_inputs():
+    template_path = Path(__file__).resolve().parents[2] / "backend" / "app" / "templates" / "unified-ui.html"
+    html = template_path.read_text(encoding="utf-8")
+    assert "stats-minOrderPrice" not in html
+    assert "stats-deliveryFee" not in html
+    assert "stats-deliveryRange" not in html
