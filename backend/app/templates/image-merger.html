@@ -3,518 +3,751 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>图片拼接工具 - 商圈调研分析平台</title>
-
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>图片拼接工具 · 呈尚策划</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
+    /* ── Design Tokens (与主页面保持一致) ─────────────────── */
+    :root {
+      --background: #0a0a0a;
+      --surface: #111111;
+      --surface-raised: #161616;
+      --surface-overlay: #1c1c1c;
+      --border: #2a2a2a;
+      --border-subtle: #1f1f1f;
+      --border-strong: #3a3a3a;
+      --text-primary: #ededed;
+      --text-secondary: #a1a1a1;
+      --text-tertiary: #666666;
+      --text-inverse: #0a0a0a;
+      --accent: #3b82f6;
+      --accent-foreground: #fff;
+      --accent-subtle: rgba(59, 130, 246, 0.08);
+      --accent-border: rgba(59, 130, 246, 0.24);
+      --success: #3ecf8e;
+      --error: #f87171;
+      --error-subtle: rgba(248, 113, 113, 0.1);
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.4);
+      --transition: 0.15s ease;
+      --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --text-xs: 0.75rem;
+      --text-sm: 0.8125rem;
+      --text-base: 0.9375rem;
+      --text-xl: 1.25rem;
+      --text-2xl: 1.5rem;
+      --text-3xl: 1.875rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      background: var(--background);
       min-height: 100vh;
-      font-family: "Microsoft YaHei", sans-serif;
     }
 
-    .main-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      margin: 2rem auto;
-      max-width: 1200px;
-      padding: 2rem;
+    /* ── Layout ──────────────────────────────────────────── */
+    .page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
     }
 
-    .header-section {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #e9ecef;
-    }
-
-    .header-title {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .image-list {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 2px dashed #dee2e6;
-    }
-
-    .image-item {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* ── Header ──────────────────────────────────────────── */
+    .page-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      margin-bottom: 20px;
     }
 
-    .image-preview {
-      width: 80px;
-      height: 60px;
+    .page-header::before {
+      /* Top highlight line */
+      content: "";
+      position: absolute;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      flex-shrink: 0;
+    }
+
+    .back-link:hover {
+      color: var(--text-primary);
+      background: var(--surface-raised);
+    }
+
+    .page-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .page-title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .page-subtitle {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    /* ── Two-column layout ────────────────────────────────── */
+    .workspace {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+    }
+
+    .card-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    /* ── Settings ─────────────────────────────────────────── */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .settings-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .field-input,
+    .field-select {
+      width: 100%;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      font-size: var(--text-xs);
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .field-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 24px;
+    }
+
+    .field-input:focus,
+    .field-select:focus {
+      border-color: var(--accent);
+    }
+
+    .field-select option {
+      background: var(--surface-raised);
+      color: var(--text-primary);
+    }
+
+    /* ── Upload Area ──────────────────────────────────────── */
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px 20px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--border-strong);
+      background: var(--surface-raised);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      text-align: center;
+    }
+
+    .upload-area:hover,
+    .upload-area.dragover {
+      border-color: var(--accent);
+      background: var(--accent-subtle);
+    }
+
+    .upload-area svg {
+      color: var(--text-tertiary);
+    }
+
+    .upload-area-text {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .upload-area-hint {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    /* ── Image List ───────────────────────────────────────── */
+    .image-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .image-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color var(--transition);
+    }
+
+    .image-row:hover {
+      border-color: var(--border-strong);
+    }
+
+    .image-thumb {
+      width: 52px;
+      height: 40px;
       object-fit: cover;
-      border-radius: 6px;
-      border: 2px solid #e9ecef;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     .image-info {
       flex: 1;
+      min-width: 0;
     }
 
     .image-name {
+      font-size: var(--text-xs);
       font-weight: 600;
-      color: #495057;
-      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .image-size {
-      font-size: 0.875rem;
-      color: #6c757d;
+    .image-meta {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      margin-top: 2px;
     }
 
-    .control-buttons {
+    .image-controls {
       display: flex;
-      gap: 0.5rem;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
-    .btn-control {
-      padding: 0.375rem 0.75rem;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.875rem;
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
     }
 
-    .btn-up {
-      background: #28a745;
-      color: white;
+    .icon-btn:hover {
+      color: var(--text-primary);
+      background: var(--surface-overlay);
+      border-color: var(--border-strong);
     }
 
-    .btn-down {
-      background: #17a2b8;
-      color: white;
+    .icon-btn.icon-btn-danger:hover {
+      color: var(--error);
+      border-color: var(--error);
+      background: var(--error-subtle);
     }
 
-    .btn-remove {
-      background: #dc3545;
-      color: white;
+    /* ── Counter Badge ────────────────────────────────────── */
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: var(--radius-full);
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent-border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: 6px;
     }
 
-    .btn-control:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .preview-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
+    /* ── Empty State ──────────────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 32px 20px;
       text-align: center;
     }
 
-    .preview-canvas {
-      max-width: 100%;
-      max-height: 600px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .empty-state svg {
+      color: var(--border-strong);
     }
 
-    .action-buttons {
+    .empty-state-text {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    /* ── Preview Section ──────────────────────────────────── */
+    .preview-wrap {
       display: flex;
-      gap: 1rem;
+      align-items: center;
       justify-content: center;
+      min-height: 240px;
+      padding: 20px;
+      background: var(--surface-raised);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    #previewCanvas {
+      max-width: 100%;
+      max-height: 600px;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    /* ── Action Bar ───────────────────────────────────────── */
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
       flex-wrap: wrap;
     }
 
-    .btn-action {
-      padding: 0.75rem 2rem;
-      border-radius: 25px;
-      border: none;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
+    /* ── Buttons ──────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      border: none;
+      transition: opacity var(--transition), transform var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
     }
 
-    .btn-primary-action {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
+    .btn:hover:not(:disabled) {
+      opacity: 0.85;
+      transform: translateY(-1px);
     }
 
-    .btn-secondary-action {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
-    .btn-tertiary-action {
-      background: linear-gradient(135deg, #6c757d, #495057);
-      color: white;
+    .btn-primary {
+      background: var(--text-primary);
+      color: var(--text-inverse);
     }
 
-    .btn-action:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text-secondary);
     }
 
+    .btn-outline:hover:not(:disabled) {
+      color: var(--text-primary);
+      background: var(--surface-raised);
+    }
+
+    /* ── Loading overlay ──────────────────────────────────── */
     .loading-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
       display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
+      place-items: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
     }
 
-    .loading-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
+    .loading-overlay.visible {
+      display: grid;
+    }
+
+    .loading-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px 40px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+      animation: spin 0.7s linear infinite;
     }
 
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: #6c757d;
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 580px) {
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .settings-grid-3 { grid-template-columns: 1fr 1fr; }
     }
 
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      color: #dee2e6;
-    }
-
-    .settings-panel {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .settings-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-label {
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-
-    .form-control,
-    .form-select {
-      border-radius: 8px;
-      border: 2px solid #e9ecef;
-      padding: 0.75rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .upload-section {
-      margin-bottom: 2rem;
-    }
-
-    .upload-area {
-      border: 3px dashed #c1c7d0;
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .upload-area:hover {
-      border-color: #667eea;
-      background: linear-gradient(135deg, #f0f4ff, #e8f2ff);
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
-    }
-
-    .upload-area.dragover {
-      border-color: #667eea;
-      background: linear-gradient(135deg, #e3f2fd, #dbeafe);
-      transform: scale(1.02);
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
-    }
-
-    .upload-content h5 {
-      color: #1f2937;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    .upload-content p {
-      color: #6b7280;
-      font-size: 0.95rem;
-    }
-
-    #selectImagesBtn {
-      background: linear-gradient(135deg, #667eea, #764ba2) !important;
-      border: none !important;
-      color: white !important;
-      padding: 0.75rem 1.5rem !important;
-      border-radius: 8px !important;
-      font-weight: 600 !important;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-      transition: all 0.3s ease !important;
-    }
-
-    #selectImagesBtn:hover {
-      background: linear-gradient(135deg, #5a67d8, #6b46c1) !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
-    }
-
-    #selectImagesBtn:active {
-      transform: translateY(0) !important;
-    }
-
-    #emptyStateSelectBtn {
-      background: linear-gradient(135deg, #667eea, #764ba2) !important;
-      border: none !important;
-      color: white !important;
-      padding: 0.75rem 1.5rem !important;
-      border-radius: 8px !important;
-      font-weight: 600 !important;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-      transition: all 0.3s ease !important;
-    }
-
-    #emptyStateSelectBtn:hover {
-      background: linear-gradient(135deg, #5a67d8, #6b46c1) !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+    @media (max-width: 420px) {
+      .settings-grid,
+      .settings-grid-3 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-content">
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay" role="status" aria-live="polite">
+    <div class="loading-card">
       <div class="spinner"></div>
-      <h5>正在处理图片...</h5>
-      <p class="text-muted mb-0">请稍候，正在拼接您的图片</p>
+      <p class="loading-text">正在处理图片，请稍候…</p>
     </div>
   </div>
 
-  <div class="container-fluid">
-    <div class="main-container">
-      <div class="header-section">
-        <h1 class="header-title">
-          <i class="fas fa-images me-3"></i>
-          图片拼接工具
-        </h1>
-        <p class="text-muted mb-0">将多张竞争对手截图拼接成一张完整图片</p>
-      </div>
+  <div class="page">
 
-      <div class="settings-panel">
-        <h3 class="settings-title">
-          <i class="fas fa-cog text-primary"></i>
-          拼接设置
-        </h3>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="form-label">拼接方向</label>
-              <select class="form-select" id="mergeDirection">
-                <option value="vertical">纵向拼接（上下排列）</option>
-                <option value="horizontal">横向拼接（左右排列）</option>
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="page-header">
+      <div class="page-title-group">
+        <h1 class="page-title">图片拼接工具</h1>
+        <p class="page-subtitle">将多张竞品截图拼接成一张完整图片</p>
+      </div>
+      <a class="back-link" href="/ui/unified-ui.html" aria-label="返回一页生成台">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        返回生成台
+      </a>
+    </header>
+
+    <!-- ── Workspace ───────────────────────────────────────── -->
+    <div class="workspace">
+
+      <!-- Left column -->
+      <div>
+
+        <!-- Settings card -->
+        <div class="card" style="margin-bottom: 14px;">
+          <p class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+            </svg>
+            拼接设置
+          </p>
+          <div class="settings-grid-3">
+            <div>
+              <label class="field-label" for="mergeDirection">方向</label>
+              <select class="field-select" id="mergeDirection">
+                <option value="vertical">纵向</option>
+                <option value="horizontal">横向</option>
               </select>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="form-label">图片对齐</label>
-              <select class="form-select" id="imageAlignment">
-                <option value="center">居中对齐</option>
+            <div>
+              <label class="field-label" for="imageAlignment">对齐</label>
+              <select class="field-select" id="imageAlignment">
+                <option value="center">居中</option>
                 <option value="left">左对齐</option>
                 <option value="right">右对齐</option>
               </select>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="form-label">图片间距 (px)</label>
-              <input type="number" class="form-control" id="imageSpacing" value="0" min="0" max="50" />
+            <div>
+              <label class="field-label" for="imageSpacing">间距 (px)</label>
+              <input class="field-input" type="number" id="imageSpacing" value="0" min="0" max="50" />
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-lg-6">
-          <h3 class="mb-3">
-            <i class="fas fa-upload text-primary me-2"></i>
+        <!-- Upload card -->
+        <div class="card">
+          <p class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="16 16 12 12 8 16"/>
+              <line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+            </svg>
             图片上传
-          </h3>
+          </p>
 
-          <div class="upload-section mb-4">
-            <div class="upload-area" id="uploadArea">
-              <input type="file" id="imageInput" multiple accept="image/*" style="display: none;" />
-              <div class="upload-content text-center">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
-                <h5>点击上传或拖拽图片到此处</h5>
-                <p class="text-muted mb-3">支持JPG、PNG、WEBP格式，可同时选择多张图片</p>
-                <button type="button" class="btn btn-primary" id="selectImagesBtn">
-                  <i class="fas fa-plus me-2"></i>
-                  选择图片
-                </button>
+          <!-- Drop zone -->
+          <input type="file" id="imageInput" multiple accept="image/*" style="display:none;" aria-label="选择图片" />
+          <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="上传图片，点击或拖拽">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <p class="upload-area-text">点击上传或拖拽到此处</p>
+            <p class="upload-area-hint">支持 JPG、PNG、WEBP，可多选</p>
+          </div>
+
+          <!-- Image list -->
+          <div style="margin-top: 16px;">
+            <div style="display:flex; align-items:center; margin-bottom: 10px;">
+              <span style="font-size: var(--text-xs); font-weight: 600; color: var(--text-secondary);">图片列表</span>
+              <span class="count-badge" id="imageCount">0</span>
+            </div>
+            <div class="image-list" id="imageList">
+              <div class="empty-state" id="emptyListState">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p class="empty-state-text">暂无图片，请先上传</p>
               </div>
             </div>
           </div>
 
-          <h4 class="mb-3">
-            <i class="fas fa-list text-success me-2"></i>
-            图片列表
-            <span class="badge bg-success ms-2" id="imageCount">0</span>
-          </h4>
-          <div class="image-list" id="imageList"></div>
+          <!-- Actions -->
+          <div class="action-bar">
+            <button class="btn btn-primary" type="button" onclick="generatePreview()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 .49-4.56"/>
+              </svg>
+              生成预览
+            </button>
+            <button class="btn btn-outline" type="button" id="downloadBtn" onclick="downloadMergedImage()" style="display:none;" aria-label="下载拼接图片">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              下载图片
+            </button>
+          </div>
         </div>
 
-        <div class="col-lg-6">
-          <h3 class="mb-3">
-            <i class="fas fa-eye text-success me-2"></i>
-            拼接预览
-          </h3>
-          <div class="preview-section">
-            <canvas id="previewCanvas" class="preview-canvas" style="display: none;"></canvas>
-            <div id="emptyPreview" class="empty-state">
-              <i class="fas fa-image empty-icon"></i>
-              <h5>暂无预览</h5>
-              <p class="mb-0">调整设置后将自动生成预览</p>
-            </div>
+      </div><!-- /left column -->
+
+      <!-- Right column: preview -->
+      <div class="card">
+        <p class="card-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          拼接预览
+        </p>
+        <div class="preview-wrap" id="previewWrap">
+          <canvas id="previewCanvas" aria-label="拼接结果预览"></canvas>
+          <div class="empty-state" id="emptyPreview">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <p class="empty-state-text">上传图片并点击「生成预览」</p>
           </div>
         </div>
       </div>
 
-      <div class="action-buttons">
-        <button class="btn-action btn-primary-action" onclick="generatePreview()">
-          <i class="fas fa-sync-alt"></i>
-          生成预览
-        </button>
-        <button class="btn-action btn-secondary-action" onclick="downloadMergedImage()" id="downloadBtn" style="display: none;">
-          <i class="fas fa-download"></i>
-          下载图片
-        </button>
-        <button class="btn-action btn-tertiary-action" onclick="goBackToMarketResearch()">
-          <i class="fas fa-arrow-left"></i>
-          返回一页生成台
-        </button>
-      </div>
-    </div>
-  </div>
+    </div><!-- /.workspace -->
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </div><!-- /.page -->
 
   <script>
     (function () {
-      function $(id) {
-        return document.getElementById(id);
-      }
+      "use strict";
+
+      /* ── Utilities ─────────────────────────────────────── */
+      function byId(id) { return document.getElementById(id); }
 
       function show(el, visible) {
         if (!el) return;
         el.style.display = visible ? "" : "none";
       }
 
-      function bytes(n) {
+      function formatBytes(n) {
         const v = Number(n) || 0;
         if (v < 1024) return `${v} B`;
         if (v < 1024 * 1024) return `${(v / 1024).toFixed(1)} KB`;
         return `${(v / 1024 / 1024).toFixed(1)} MB`;
       }
 
+      /* ── State ─────────────────────────────────────────── */
       const state = { items: [] };
 
-      function setLoading(loading) {
-        show($("loadingOverlay"), loading);
+      /* ── Loading ───────────────────────────────────────── */
+      function setLoading(on) {
+        const el = byId("loadingOverlay");
+        if (el) el.classList.toggle("visible", on);
       }
 
-      function syncCount() {
-        const badge = $("imageCount");
-        if (badge) badge.textContent = String(state.items.length);
-      }
-
+      /* ── Render image list ─────────────────────────────── */
       function renderList() {
-        const list = $("imageList");
-        if (!list) return;
-        list.innerHTML = "";
-        syncCount();
+        const list = byId("imageList");
+        const emptyState = byId("emptyListState");
+        const countEl = byId("imageCount");
 
-        state.items.forEach((it, idx) => {
+        if (countEl) countEl.textContent = String(state.items.length);
+
+        if (!list) return;
+
+        // Clear existing rows (keep emptyState node)
+        Array.from(list.children).forEach((child) => {
+          if (child !== emptyState) child.remove();
+        });
+
+        show(emptyState, state.items.length === 0);
+
+        state.items.forEach((item, idx) => {
           const row = document.createElement("div");
-          row.className = "image-item";
+          row.className = "image-row";
           row.innerHTML = `
-            <img class="image-preview" src="${it.dataUrl}" alt="预览" />
+            <img class="image-thumb" src="${item.dataUrl}" alt="${item.name}" />
             <div class="image-info">
-              <div class="image-name">${it.name}</div>
-              <div class="image-size">${bytes(it.size)} · ${it.width}×${it.height}</div>
+              <p class="image-name">${item.name}</p>
+              <p class="image-meta">${formatBytes(item.size)} &middot; ${item.width}&times;${item.height}</p>
             </div>
-            <div class="control-buttons">
-              <button class="btn-control btn-up" type="button" title="上移"><i class="fas fa-arrow-up"></i></button>
-              <button class="btn-control btn-down" type="button" title="下移"><i class="fas fa-arrow-down"></i></button>
-              <button class="btn-control btn-remove" type="button" title="移除"><i class="fas fa-trash"></i></button>
+            <div class="image-controls">
+              <button class="icon-btn" type="button" title="上移" aria-label="上移">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
+              </button>
+              <button class="icon-btn" type="button" title="下移" aria-label="下移">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <button class="icon-btn icon-btn-danger" type="button" title="移除" aria-label="移除图片">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
           `;
 
@@ -538,54 +771,58 @@
       function removeItem(index) {
         state.items.splice(index, 1);
         renderList();
-        show($("downloadBtn"), false);
-        show($("previewCanvas"), false);
-        show($("emptyPreview"), state.items.length === 0);
+        show(byId("downloadBtn"), false);
+        show(byId("previewCanvas"), false);
+        show(byId("emptyPreview"), true);
       }
 
+      /* ── Load image files ──────────────────────────────── */
       function readImage(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
+          reader.onerror = () => reject(new Error("读取文件失败"));
           reader.onload = () => {
             const img = new Image();
-            img.onload = () =>
-              resolve({
-                name: file.name || "图片",
-                size: file.size || 0,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-                dataUrl: reader.result,
-                img
-              });
             img.onerror = () => reject(new Error("图片解析失败"));
+            img.onload = () => resolve({
+              name: file.name || "图片",
+              size: file.size || 0,
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+              dataUrl: reader.result,
+              img,
+            });
             img.src = reader.result;
           };
-          reader.onerror = () => reject(new Error("读取文件失败"));
           reader.readAsDataURL(file);
         });
       }
 
       async function addFiles(files) {
-        const list = Array.from(files || []).filter((f) => f && f.type && f.type.startsWith("image/"));
+        const list = Array.from(files || []).filter(
+          (f) => f && f.type && f.type.startsWith("image/")
+        );
         if (!list.length) return;
 
         setLoading(true);
         try {
           for (const f of list) state.items.push(await readImage(f));
           renderList();
-          show($("emptyPreview"), state.items.length === 0);
         } finally {
           setLoading(false);
         }
       }
 
+      /* ── Options ───────────────────────────────────────── */
       function getOptions() {
-        const direction = ($("mergeDirection")?.value || "vertical").toLowerCase();
-        const alignment = ($("imageAlignment")?.value || "center").toLowerCase();
-        const spacing = Math.max(0, Math.min(50, Number($("imageSpacing")?.value || 0) || 0));
-        return { direction, alignment, spacing };
+        return {
+          direction: (byId("mergeDirection")?.value || "vertical").toLowerCase(),
+          alignment: (byId("imageAlignment")?.value || "center").toLowerCase(),
+          spacing: Math.max(0, Math.min(50, Number(byId("imageSpacing")?.value || 0) || 0)),
+        };
       }
 
+      /* ── Draw canvas ───────────────────────────────────── */
       function drawPreview() {
         if (!state.items.length) {
           alert("请先上传至少一张图片");
@@ -593,7 +830,7 @@
         }
 
         const { direction, alignment, spacing } = getOptions();
-        const canvas = $("previewCanvas");
+        const canvas = byId("previewCanvas");
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
@@ -602,97 +839,99 @@
         const maxH = Math.max(...state.items.map((i) => i.height));
 
         if (direction === "horizontal") {
-          canvas.width =
-            state.items.reduce((sum, i) => sum + i.width, 0) + spacing * (state.items.length - 1);
+          canvas.width = state.items.reduce((s, i) => s + i.width, 0) + spacing * (state.items.length - 1);
           canvas.height = maxH;
         } else {
           canvas.width = maxW;
-          canvas.height =
-            state.items.reduce((sum, i) => sum + i.height, 0) + spacing * (state.items.length - 1);
+          canvas.height = state.items.reduce((s, i) => s + i.height, 0) + spacing * (state.items.length - 1);
         }
 
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         let offset = 0;
-        state.items.forEach((i) => {
-          let x = 0;
-          let y = 0;
-
+        state.items.forEach((item) => {
+          let x = 0, y = 0;
           if (direction === "horizontal") {
             x = offset;
             if (alignment === "top") y = 0;
-            else if (alignment === "bottom") y = maxH - i.height;
-            else y = Math.round((maxH - i.height) / 2);
-            offset += i.width + spacing;
+            else if (alignment === "bottom") y = maxH - item.height;
+            else y = Math.round((maxH - item.height) / 2);
+            offset += item.width + spacing;
           } else {
             y = offset;
             if (alignment === "left") x = 0;
-            else if (alignment === "right") x = maxW - i.width;
-            else x = Math.round((maxW - i.width) / 2);
-            offset += i.height + spacing;
+            else if (alignment === "right") x = maxW - item.width;
+            else x = Math.round((maxW - item.width) / 2);
+            offset += item.height + spacing;
           }
-
-          ctx.drawImage(i.img, x, y, i.width, i.height);
+          ctx.drawImage(item.img, x, y, item.width, item.height);
         });
 
-        show($("emptyPreview"), false);
+        show(byId("emptyPreview"), false);
         show(canvas, true);
-        show($("downloadBtn"), true);
+        show(byId("downloadBtn"), true);
       }
 
       async function downloadImage() {
-        const canvas = $("previewCanvas");
-        if (!canvas) return;
-        if (canvas.width === 0 || canvas.height === 0) {
+        const canvas = byId("previewCanvas");
+        if (!canvas || canvas.width === 0) {
           alert("请先生成预览");
           return;
         }
-
         const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-        if (!blob) {
-          alert("导出失败");
-          return;
-        }
+        if (!blob) { alert("导出失败"); return; }
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = `merged_${new Date().toISOString().slice(0, 10)}.png`;
+        a.style.display = "none";
         document.body.appendChild(a);
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
       }
 
+      /* ── Bind upload ───────────────────────────────────── */
       function bindUpload() {
-        const input = $("imageInput");
-        const area = $("uploadArea");
-        const btn = $("selectImagesBtn");
+        const input = byId("imageInput");
+        const area = byId("uploadArea");
 
-        if (btn && input) btn.addEventListener("click", () => input.click());
-        if (input) input.addEventListener("change", () => addFiles(input.files));
+        if (input) {
+          input.addEventListener("change", () => addFiles(input.files));
+        }
 
         if (area) {
           area.addEventListener("click", () => input && input.click());
-          area.addEventListener("dragover", (e) => e.preventDefault());
+          area.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              input && input.click();
+            }
+          });
+          area.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            area.classList.add("dragover");
+          });
+          area.addEventListener("dragleave", () => area.classList.remove("dragover"));
           area.addEventListener("drop", (e) => {
             e.preventDefault();
+            area.classList.remove("dragover");
             addFiles(e.dataTransfer?.files);
           });
         }
       }
 
+      /* ── Expose globals ────────────────────────────────── */
       window.generatePreview = drawPreview;
       window.downloadMergedImage = downloadImage;
-      window.goBackToMarketResearch = function () {
-        window.location.href = "/ui/unified-ui.html";
-      };
 
+      /* ── Init ──────────────────────────────────────────── */
       document.addEventListener("DOMContentLoaded", () => {
         bindUpload();
         renderList();
-        show($("emptyPreview"), true);
+        show(byId("emptyPreview"), true);
       });
     })();
   </script>
