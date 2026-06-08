@@ -127,7 +127,7 @@
 
   /**
    * 读取当前用户选中的线路 ID。
-   * @returns {"line1"|"line2"|"line3"}
+   * @returns {"line1"|"line2"}
    */
   function getSelectedLineId() {
     const checked = document.querySelector('input[name="reportLine"]:checked');

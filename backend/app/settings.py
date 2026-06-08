@@ -53,14 +53,6 @@ class Settings(BaseSettings):
     upstream_line2_model_market: str = ""
     upstream_line2_model_store_activity: str = ""
     upstream_line2_model_data_statistics: str = ""
-    new_picture_wall_128api_base_url: str = ""
-    new_picture_wall_128api_key: str = ""
-    new_picture_wall_128api_model_default: str = ""
-    new_picture_wall_128api_model_brand: str = ""
-    new_picture_wall_128api_model_market: str = ""
-    new_picture_wall_128api_model_store_activity: str = ""
-    new_picture_wall_128api_model_data_statistics: str = ""
-
     report_ttl_seconds: int = 86400
     cors_allow_origins: str = "*"
     max_upload_mb: int = 10
@@ -86,24 +78,6 @@ class Settings(BaseSettings):
                 model_market=self.upstream_line2_model_market,
                 model_store_activity=self.upstream_line2_model_store_activity,
                 model_data_statistics=self.upstream_line2_model_data_statistics,
-            )
-        if current == "line3":
-            return UpstreamLine(
-                line_id="line3",
-                label="线路3",
-                base_url=self.new_picture_wall_128api_base_url,
-                api_key=self.new_picture_wall_128api_key,
-                model_default=self.new_picture_wall_128api_model_default or self.upstream_model_default,
-                model_brand=self.new_picture_wall_128api_model_brand or self.upstream_model_brand,
-                model_market=self.new_picture_wall_128api_model_market or self.upstream_model_market,
-                model_store_activity=(
-                    self.new_picture_wall_128api_model_store_activity
-                    or self.upstream_model_store_activity
-                ),
-                model_data_statistics=(
-                    self.new_picture_wall_128api_model_data_statistics
-                    or self.upstream_model_data_statistics
-                ),
             )
         if current != "line1":
             raise ValueError(f"不支持的线路: {current}")

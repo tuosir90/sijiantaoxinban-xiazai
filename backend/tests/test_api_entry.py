@@ -2,7 +2,9 @@ from pathlib import Path
 import json
 import sys
 
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
+import pytest
 
 
 def test_api_entry_importable():
@@ -32,7 +34,7 @@ def test_api_entry_serves_split_ui_assets():
     assert "javascript" in js_res.headers["content-type"]
 
 
-def test_api_entry_accepts_line3():
+def test_api_entry_rejects_line3():
     repo_root = Path(__file__).resolve().parents[2]
     backend_dir = Path(__file__).resolve().parents[1]
     sys.path = [p for p in sys.path if p != str(backend_dir)]
@@ -40,7 +42,8 @@ def test_api_entry_accepts_line3():
 
     from api.index import _parse_line_id
 
-    assert _parse_line_id("line3") == "line3"
+    with pytest.raises(HTTPException):
+        _parse_line_id("line3")
 
 
 def test_api_generate_accepts_data_statistics_without_delivery_fields(monkeypatch):

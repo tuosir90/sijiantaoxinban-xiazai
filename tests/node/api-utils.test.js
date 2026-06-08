@@ -2,24 +2,24 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
-test("统一页面顶部提供带名称的线路切换，且默认选中线路1", () => {
+test("统一页面顶部只提供线路1和线路2，且默认选中线路1", () => {
   const html = fs.readFileSync("backend/app/templates/unified-ui.html", "utf-8");
   const css = fs.readFileSync("backend/app/templates/unified-ui.css", "utf-8");
-  assert.ok(html.includes("线路1"));
-  assert.ok(html.includes("线路2"));
-  assert.ok(html.includes("线路3"));
-  assert.ok(html.includes("云雾AI"));
+  assert.ok(html.includes("线路 1"));
+  assert.ok(html.includes("线路 2"));
+  assert.equal(html.includes("线路 3"), false);
+  assert.ok(html.includes("云雾 AI"));
   assert.ok(html.includes("向量引擎"));
-  assert.ok(html.includes("128API"));
+  assert.equal(html.includes("128API"), false);
   assert.ok(html.includes("line-option-copy"));
   assert.ok(html.includes("line-option-name"));
   assert.match(html, /value="line1"[\s\S]*checked/);
   assert.ok(html.includes("line-option-line1"));
   assert.ok(html.includes("line-option-line2"));
-  assert.ok(html.includes("line-option-line3"));
+  assert.equal(html.includes("line-option-line3"), false);
   assert.ok(css.includes(".line-option-copy"));
   assert.ok(css.includes(".line-option-name"));
   assert.ok(css.includes(".line-option-line1"));
   assert.ok(css.includes(".line-option-line2"));
-  assert.ok(css.includes(".line-option-line3"));
+  assert.equal(css.includes(".line-option-line3"), false);
 });

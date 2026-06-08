@@ -259,13 +259,6 @@ body {
   color: #fff;
 }
 
-/* Active state: line3 = green */
-.line-option-line3:has(input:checked) {
-  background: #15803d;
-  border-color: #15803d;
-  color: #fff;
-}
-
 /* ── Module Card ──────────────────────────────────────────── */
 .module-card {
   background: var(--surface);

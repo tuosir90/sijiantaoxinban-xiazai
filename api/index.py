@@ -30,7 +30,7 @@ UI_ASSET_MEDIA_TYPES = {
     "unified-ui.js": "application/javascript",
     "unified-ui-helpers.js": "application/javascript",
 }
-VALID_LINE_IDS = {"line1", "line2", "line3"}
+VALID_LINE_IDS = {"line1", "line2"}
 
 
 def _build_error_payload(exc: BaseException) -> dict[str, Any]:
