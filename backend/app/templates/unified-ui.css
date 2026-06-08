@@ -1,43 +1,43 @@
 /* =========================================================
    呈尚策划 · 外卖店铺四件套 · Design System
-   Vercel-style: dark background, precise spacing, clean cards
+   Light workspace, precise spacing, clean cards
    ========================================================= */
 
 /* ── Design Tokens ────────────────────────────────────────── */
 :root {
   /* Core colors */
-  --background: #0a0a0a;
-  --surface: #111111;
-  --surface-raised: #161616;
-  --surface-overlay: #1c1c1c;
-  --border: #2a2a2a;
-  --border-subtle: #1f1f1f;
-  --border-strong: #3a3a3a;
+  --background: #f6f7fb;
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --surface-overlay: #f1f5f9;
+  --border: #d9e0ea;
+  --border-subtle: #e8edf4;
+  --border-strong: #b8c3d2;
 
   /* Text */
-  --text-primary: #ededed;
-  --text-secondary: #a1a1a1;
-  --text-tertiary: #666666;
-  --text-inverse: #0a0a0a;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #8a94a6;
+  --text-inverse: #ffffff;
 
-  /* Accent — amber for brand warmth within dark system */
-  --accent: #f5a623;
-  --accent-foreground: #0a0a0a;
-  --accent-subtle: rgba(245, 166, 35, 0.08);
-  --accent-border: rgba(245, 166, 35, 0.24);
+  /* Accent — amber for brand warmth within a light system */
+  --accent: #b45309;
+  --accent-foreground: #ffffff;
+  --accent-subtle: rgba(180, 83, 9, 0.09);
+  --accent-border: rgba(180, 83, 9, 0.28);
 
   /* Semantic colors */
-  --success: #3ecf8e;
-  --success-subtle: rgba(62, 207, 142, 0.1);
-  --error: #f87171;
-  --error-subtle: rgba(248, 113, 113, 0.1);
-  --error-border: rgba(248, 113, 113, 0.3);
+  --success: #059669;
+  --success-subtle: rgba(5, 150, 105, 0.1);
+  --error: #dc2626;
+  --error-subtle: rgba(220, 38, 38, 0.08);
+  --error-border: rgba(220, 38, 38, 0.24);
 
   /* Per-module accent colors */
-  --module-brand: #f5a623;
-  --module-market: #3b82f6;
-  --module-activity: #f97316;
-  --module-stats: #a78bfa;
+  --module-brand: #b45309;
+  --module-market: #2563eb;
+  --module-activity: #c2410c;
+  --module-stats: #6d28d9;
 
   /* Radius */
   --radius-sm: 6px;
@@ -47,9 +47,9 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.12);
 
   /* Spacing scale */
   --space-1: 4px;
@@ -128,7 +128,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245, 166, 35, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(180, 83, 9, 0.35), transparent);
 }
 
 .brand-mark {
@@ -254,15 +254,15 @@ body {
 
 /* Active state: line2 = blue */
 .line-option-line2:has(input:checked) {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: #2563eb;
+  border-color: #2563eb;
   color: #fff;
 }
 
 /* Active state: line3 = green */
 .line-option-line3:has(input:checked) {
-  background: #22c55e;
-  border-color: #22c55e;
+  background: #15803d;
+  border-color: #15803d;
   color: #fff;
 }
 
@@ -406,7 +406,7 @@ body {
 }
 
 .field-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a94a6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   padding-right: 28px;

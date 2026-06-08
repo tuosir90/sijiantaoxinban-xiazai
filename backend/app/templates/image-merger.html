@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="theme-color" content="#f6f7fb" />
   <title>图片拼接工具 · 呈尚策划</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,30 +12,30 @@
   <style>
     /* ── Design Tokens (与主页面保持一致) ─────────────────── */
     :root {
-      --background: #0a0a0a;
-      --surface: #111111;
-      --surface-raised: #161616;
-      --surface-overlay: #1c1c1c;
-      --border: #2a2a2a;
-      --border-subtle: #1f1f1f;
-      --border-strong: #3a3a3a;
-      --text-primary: #ededed;
-      --text-secondary: #a1a1a1;
-      --text-tertiary: #666666;
-      --text-inverse: #0a0a0a;
-      --accent: #3b82f6;
+      --background: #f6f7fb;
+      --surface: #ffffff;
+      --surface-raised: #f8fafc;
+      --surface-overlay: #f1f5f9;
+      --border: #d9e0ea;
+      --border-subtle: #e8edf4;
+      --border-strong: #b8c3d2;
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --text-tertiary: #8a94a6;
+      --text-inverse: #ffffff;
+      --accent: #2563eb;
       --accent-foreground: #fff;
-      --accent-subtle: rgba(59, 130, 246, 0.08);
-      --accent-border: rgba(59, 130, 246, 0.24);
-      --success: #3ecf8e;
-      --error: #f87171;
-      --error-subtle: rgba(248, 113, 113, 0.1);
+      --accent-subtle: rgba(37, 99, 235, 0.08);
+      --accent-border: rgba(37, 99, 235, 0.24);
+      --success: #059669;
+      --error: #dc2626;
+      --error-subtle: rgba(220, 38, 38, 0.08);
       --radius-sm: 6px;
       --radius: 10px;
       --radius-lg: 14px;
       --radius-xl: 18px;
       --radius-full: 9999px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.4);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, .08);
       --transition: 0.15s ease;
       --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -203,7 +203,7 @@
     }
 
     .field-select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%238a94a6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 8px center;
       padding-right: 24px;
@@ -450,7 +450,7 @@
     .loading-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(15, 23, 42, 0.38);
       display: none;
       place-items: center;
       z-index: 100;
